@@ -2,11 +2,11 @@
 Keio Wolve'Z CaSat project 2020
 
 ## Member
-- Project manager
+- Project manager: 
   Yuki Ko
-- Software
+- Software: 
   Yuji Tanaka, Yuki Ko, Kazuki Oshima, Hikaru Kimura, Miyuki Nakamura
-- Hardware
+- Hardware: 
   Mina Park,Shinichiro Kaji
 
 ## About our CanSat
