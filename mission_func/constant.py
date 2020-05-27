@@ -12,7 +12,7 @@ class constant():
     #シークエンス
     PREPARING = 0
     FLYING = 1
-    DROPPING =２
+    DROPPING = 2
     LANDING = 3
     RUNNING = 4
     GOAL = 5
@@ -20,7 +20,8 @@ class constant():
     #閾値
     ACC_THRE = 1
     COUNT_ACC_LOOP_THRE = 50
-    LANDING_TIME_THRE =　50
+    LANDING_TIME_THRE = 10
     RELEASING_TIME_THRE = 40
+    
     
     
