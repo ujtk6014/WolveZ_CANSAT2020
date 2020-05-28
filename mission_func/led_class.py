@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+global led
 
 class led():
     def __init__(self,pin):

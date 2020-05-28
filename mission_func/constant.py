@@ -8,6 +8,9 @@ class constant():
     RIGHT_MOTOR_IN2_PIN = 6
     RELEASING_PIN = 7
     RELEASING_PIN = 8
+    LED_PRE_PIN = 25
+    LED_FLY_PIN = 26
+    LED_G_PIN = 20
     
     #シークエンス
     PREPARING = 0
@@ -20,7 +23,7 @@ class constant():
     #閾値
     ACC_THRE = 1
     COUNT_ACC_LOOP_THRE = 50
-    LANDING_TIME_THRE = 10
+    LANDING_TIME_THRE = 5
     RELEASING_TIME_THRE = 40
     
     
