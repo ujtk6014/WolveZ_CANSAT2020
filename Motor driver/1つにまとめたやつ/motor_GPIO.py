@@ -14,7 +14,7 @@ GPIO.setup(8,  GPIO.OUT)
 GPIO.setup(10, GPIO.OUT)
 GPIO.setup(12, GPIO.OUT)
  
-pwmR = GPIO.PWM(12, 50) # 周波数1kHZ　デューティー比0%でPWM出力　オブジェクト作成
+pwmR = GPIO.PWM(12, 50) # 周波数50Hz　デューティー比0%でPWM出力　オブジェクト作成
 pwmR.start(0)
  
 print('正転')
