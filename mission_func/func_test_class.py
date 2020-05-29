@@ -7,10 +7,9 @@ class simpleFunc():
     
     def __init__(self):
         #オブジェクト生成
-        self.cnst = ct.constant()
-        self.LED_Pre = led_class.led(self.cnst.LED_PRE_PIN)
-        self.LED_Fly = led_class.led(self.cnst.LED_FLY_PIN)
-        self.LED_G = led_class.led(self.cnst.LED_G_PIN)
+        self.LED_Pre = led_class.led(ct.const.LED_PRE_PIN)
+        self.LED_Fly = led_class.led(ct.const.LED_FLY_PIN)
+        self.LED_G = led_class.led(ct.const.LED_G_PIN)
         self.state = 0
         self.preparingTime = 0
         self.flyingTime = 0
@@ -39,7 +38,7 @@ class simpleFunc():
         time.sleep(3)
         
         if not self.preparingTime == 0:
-            if time.time() - self.preparingTime > self.cnst.LANDING_TIME_THRE:
+            if time.time() - self.preparingTime > ct.const.LANDING_TIME_THRE:
                 self.state = 1
                 self.laststate = 1
     
@@ -54,7 +53,7 @@ class simpleFunc():
         time.sleep(3)
         
         if not self.flyingTime == 0:
-            if time.time() - self.flyingTime > self.cnst.LANDING_TIME_THRE:
+            if time.time() - self.flyingTime > ct.const.LANDING_TIME_THRE:
                 self.state = 2
                 self.laststate = 2
 
@@ -69,7 +68,7 @@ class simpleFunc():
         time.sleep(3)
         
         if not self.goalTime == 0:
-            if time.time() - self.goalTime > self.cnst.LANDING_TIME_THRE:
+            if time.time() - self.goalTime > ct.const.LANDING_TIME_THRE:
                 self.state = 3
                 self.laststate = 3
     
