@@ -53,7 +53,6 @@ class Hcsr04(object):
             #return distance
         return distance        
 
-
         """
         while True:
             start_time = time.time()
