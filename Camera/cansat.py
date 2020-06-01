@@ -17,7 +17,7 @@ class Cansat(object):
         self.area=0.0
         self.countAreaLoopEnd=0 # 終了判定用
         self.countAreaLoopStart=0 # 開始判定用
-        self.countAreaLoopLose=0 # 開始判定用
+        self.countAreaLoopLose=0 # 見失い判定用
         self.dist=0.0
         self.countDistanceLoopStart=0
         self.countDistanceLoopEnd=0
