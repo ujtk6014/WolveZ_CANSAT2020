@@ -29,10 +29,10 @@ class simpleFunc():
             
     def preparing(self):
         print('Now it is preparing state')
-        self.LED_Pre.led_on()
-        self.LED_Fly.led_off()
-        self.LED_G.led_off()
         if self.preparingTime == 0:
+            self.LED_Pre.led_on()
+            self.LED_Fly.led_off()
+            self.LED_G.led_off()
             self.preparingTime = time.time()#現在の時刻を取得
             
         time.sleep(3)
@@ -44,10 +44,10 @@ class simpleFunc():
     
     def flying(self):
         print('Now it is flying state')
-        self.LED_Pre.led_off()
-        self.LED_Fly.led_on()
-        self.LED_G.led_off()
         if self.flyingTime == 0:
+            self.LED_Pre.led_off()
+            self.LED_Fly.led_on()
+            self.LED_G.led_off()
             self.flyingTime = time.time()#現在の時刻を取得
             
         time.sleep(3)
@@ -58,11 +58,11 @@ class simpleFunc():
                 self.laststate = 2
 
     def goal(self):
-        self.LED_Pre.led_off()
-        self.LED_Fly.led_off()
-        self.LED_G.led_on()
         print('Judging goal..')
         if self.goalTime == 0:
+            self.LED_Pre.led_off()
+            self.LED_Fly.led_off()
+            self.LED_G.led_on()
             self.goalTime = time.time()#現在の時刻を取得
             
         time.sleep(3)
