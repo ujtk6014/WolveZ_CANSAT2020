@@ -6,6 +6,8 @@ class Camera(object):
     #閾値の定義
     AREA_THRE_END=20000
     COUNT_AREA_LOOP_THRE_END=30
+    AREA_THRE_LOSE=50
+    COUNT_AREA_LOOP_THRE_LOSE=70
     AREA_THRE_START=2500
     COUNT_AREA_LOOP_THRE_START=10
     COG_THRE_START=15000
@@ -47,10 +49,6 @@ class Camera(object):
     def find_area(data):
         a=data[2]*data[3]
         return a
-        
-        
-
-
 
     """
     def find_rect_of_target_color(image):
