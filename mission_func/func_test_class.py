@@ -9,9 +9,9 @@ class simpleFunc():
     
     def __init__(self):
         #オブジェクト生成
-        self.LED_Pre = led_class.led(ct.const.LED_PRE_PIN)
-        self.LED_Fly = led_class.led(ct.const.LED_FLY_PIN)
-        self.LED_G = led_class.led(ct.const.LED_G_PIN)
+        self.LED_Pre = led_class.led(ct.const.RED_LED_PIN)
+        self.LED_Fly = led_class.led(ct.const.BLUE_LED_PIN)
+        self.LED_G = led_class.led(ct.const.GREEN_LED_PIN)
         self.state = 0
         self.preparingTime = 0
         self.flyingTime = 0
