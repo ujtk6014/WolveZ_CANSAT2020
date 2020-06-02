@@ -3,6 +3,7 @@ import constant as ct
 import led_class
 import sys
 import datetime
+global start_time
 
 class simpleFunc():
     
@@ -15,6 +16,7 @@ class simpleFunc():
         self.preparingTime = 0
         self.flyingTime = 0
         self.goalTime = 0
+        self.startTime = time.time()
     
     def sensor(self): #センサーの値の読み取り
         #データの読み込み
@@ -24,11 +26,14 @@ class simpleFunc():
         #    sendRadio()
     
     def writeData(self): #txtファイルへの書き込み
+        timer = 1000*(time.time() - self.startTime) #経過時間 (ms)
+        timer = int(timer)
+        """
         dt_now = str(datetime.datetime.now()) #現在の日付の取得
         dt_now = dt_now[0:19] #いらないところを切り取る
-        
+        """
         #ログデータ作成。\マークを入れることで改行してもコードを続けて書くことができる
-        datalog = dt_now + ","\
+        datalog = str(timer) + ","\
                   + str(self.state) + ","\
                   + str(self.LED_Pre.led_status) + ","\
                   + str(self.LED_Fly.led_status) + ","\
@@ -61,8 +66,6 @@ class simpleFunc():
             self.LED_Fly.led_off()
             self.LED_G.led_off()
             self.preparingTime = time.time()#現在の時刻を取得
-            
-        time.sleep(1)
         
         if not self.preparingTime == 0:
             if time.time() - self.preparingTime > ct.const.LANDING_TIME_THRE:
@@ -76,8 +79,6 @@ class simpleFunc():
             self.LED_Fly.led_on()
             self.LED_G.led_off()
             self.flyingTime = time.time()#現在の時刻を取得
-            
-        time.sleep(1)
         
         if not self.flyingTime == 0:
             if time.time() - self.flyingTime > ct.const.LANDING_TIME_THRE:
@@ -91,8 +92,6 @@ class simpleFunc():
             self.LED_Fly.led_off()
             self.LED_G.led_on()
             self.goalTime = time.time()#現在の時刻を取得
-            
-        time.sleep(1)
         
         if not self.goalTime == 0:
             if time.time() - self.goalTime > ct.const.LANDING_TIME_THRE:

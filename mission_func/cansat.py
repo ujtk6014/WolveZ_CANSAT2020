@@ -20,15 +20,17 @@ import bno055
 class Cansat(object):
     
     def __init__(self):
-        #定数定義（もっといいやり方見つけたい笑）
-        self.cnst = ct.constant()
         #オブジェクトの生成
-        self.rihgtmotor = motor.Motor(self.cnst.RIGHT_MOTOR_VREF_PIN,self.cnst.RIGHT_MOTOR_IN1_PIN,self.cnst.RIGHT_MOTOR_IN2_PIN)
-        self.leftmotor = motor.Motor(self.cnst.LEFT_MOTOR_VREF_PIN,self.cnst.LEFT_MOTOR_IN1_PIN,self.cnst.LEFT_MOTOR_IN2_PIN)
+        self.rihgtmotor = motor.Motor(ct.const.RIGHT_MOTOR_VREF_PIN,ct.const.RIGHT_MOTOR_IN1_PIN,ct.const.RIGHT_MOTOR_IN2_PIN)
+        self.leftmotor = motor.Motor(ct.const.LEFT_MOTOR_VREF_PIN,ct.const.LEFT_MOTOR_IN1_PIN,ct.const.LEFT_MOTOR_IN2_PIN)
         self.gps = gps.GPS()
         self.bno055 = bno055.BNO()
         self.radio = radio.radio()
         self.ultrasonic = ultrasonic.Ultrasonic()
+        
+        #開始時間の記録
+        self.startTime = time.time()
+        self.timer = 0
         
         #変数
         self.state = 0
@@ -52,14 +54,52 @@ class Cansat(object):
         gps.setupGps()
         bno055.setupBno()
         radio.setupRadio()
-        GPIO.setmode(GPIO.BCM) #enable GPIO
-        GPIO.setup(self.cnst.BURNING_PIN,GPIO.OUT) #using pin 25 as an output
+        GPIO.setmode(GPIO.BCM) #GPIOの設定
+        GPIO.setup(ct.const.BURNING_PIN,GPIO.OUT) #焼き切り用のピンの設定
         
     def sensor(self):
+        self.gps.gpsread()
+        self.bno055.bnoread()
+        self.ultrasonic.distread()
+        self.writeData()#txtファイルへのログの保存
+        if not self.state == 2:
+            self.sendRadio()#LoRaでログを送信
     
-    def writeSd(self):
-    
-    def sendLoRa(self):
+    def writeData(self):
+        self.timer = 1000*(time.time() - self.startTime) #経過時間 (ms)
+        self.timer = int(timer)
+        #ログデータ作成。\マークを入れることで改行してもコードを続けて書くことができる
+        datalog = str(self.timer) + ","\
+                  + str(self.state) + ","\
+                  + str(self.gps.Time) + ","\
+                  + str(self.gps.Lat) + ","\
+                  + str(self.gps.Lon) + ","\
+                  + str(self.bno055.gx) + ","\
+                  + str(self.bno055.gy) + ","\
+                  + str(self.bno055.gz) + ","\
+                  + str(self.bno055.Ax) + ","\
+                  + str(self.bno055.Ay) + ","\
+                  + str(self.bno055.Az) + ","\
+                  + str(self.ultrasonic.distance) + ","\
+                  + str(self.rightmotor.velocity) + ","\
+                  + str(self.leftmotor.velocity)
+        
+        with open("test.txt",mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
+            test.write(datalog + '\n')
+          
+    def sendRadio(self):
+        datalog = str(self.timer) + ","\
+                  + str(self.state) + ","\
+                  + str(self.gps.Time) + ","\
+                  + str(self.gps.Lat) + ","\
+                  + str(self.gps.Lon) + ","\
+                  + str(self.bno055.gx) + ","\
+                  + str(self.bno055.gy) + ","\
+                  + str(self.bno055.gz) + ","\
+                  + str(self.ultrasonic.distance) + ","\
+                  + str(self.rightmotor.velocity) + ","\
+                  + str(self.leftmotor.velocity)
+        self.radio.sendData(datalog) #データを送信
     
     def sequence(self):
         if self.state == 0:　#初期化の必要あり
@@ -71,11 +111,13 @@ class Cansat(object):
         elif self.state == 3:
             self.landing()
         elif self.state == 4:
-            self.running()
+            self.waiting()
         elif self.state == 5:
+            self.running()
+        elif self.state == 6:
             self.goal()
         else:
-            self.state = 0
+            self.state = self.laststate #どこにも引っかからない場合何かがおかしいのでlaststateに戻してあげる
     
     def preparing(self):#フライトピンを使う場合はいらないかも
     
@@ -87,14 +129,15 @@ class Cansat(object):
             
         if (pow(bno055.Ax,2) + pow(bno055.Ay,2) + pow(bno055.Az,2)) < pow(self.ACC_THRE,2):#加速度が閾値以下で着地判定
             self.countDropLoop+=1
-            if self.countDropLoop > self.cnst.COUNT_ACC_LOOP_THRE:
+            if self.countDropLoop > ct.const.COUNT_ACC_LOOP_THRE:
                 self.state = 3
+                self.laststate = 3
         else:
             self.countDropLoop = 0 #初期化の必要あり
         """
         #時間で着地判定
         if not self.droppingTime == 0:
-            if time.time() - self.droppingTime > self.cnst.LANDING_TIME_THRE:
+            if time.time() - self.droppingTime > ct.const.LANDING_TIME_THRE:
                 self.state = 3
                 self.laststate = 3
         """
@@ -105,17 +148,20 @@ class Cansat(object):
             
         GPIO.output(self.RELEASING_PIN,HIGH)
         
-        if time.time()-self.landingTime > self.cnst.RELEASING_TIME_THRE:
-            GPIO.output(self.cnst.RELEASING_PIN,LOW)
+        if time.time()-self.landingTime > ct.const.RELEASING_TIME_THRE:
+            GPIO.output(ct.const.RELEASING_PIN,LOW)
             self.state = 4
             self.laststate = 4
             
+    def waiting(self):
+        
+    
     def running(self):
         if self.runningTime == 0:
-            GPIO.output(self.cnst.RELEASING_PIN,HIGH)
+            GPIO.output(ct.const.RELEASING_PIN,HIGH)
             self.runningTime = time.time()
         
-        if self.countRelLoop < self.cnst.COUNT_REL_LOOP_THRE:
+        if self.countRelLoop < ct.const.COUNT_REL_LOOP_THRE:
             rightmotor.go() #なにか引数を入れる
             leftmotor.go()
             
