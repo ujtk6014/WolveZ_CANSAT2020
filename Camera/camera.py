@@ -4,8 +4,13 @@ import numpy as np
 class Camera(object):
     
     #閾値の定義
-    AREA_THRE=20000
-    COUNT_AREA_LOOP_THRE=30
+    AREA_THRE_END=20000
+    COUNT_AREA_LOOP_THRE_END=30
+    AREA_THRE_LOSE=50
+    COUNT_AREA_LOOP_THRE_LOSE=70
+    AREA_THRE_START=2500
+    COUNT_AREA_LOOP_THRE_START=10
+    COG_THRE_START=15000
 
     def find_rect_of_target_color(image):
       hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV_FULL)
@@ -44,18 +49,6 @@ class Camera(object):
     def find_area(data):
         a=data[2]*data[3]
         return a
-        
-
-    if __name__ == "__main__":
-      cgx=0
-      cgy=0
-      angle=0
-      direct=0
-      area=0
-      countAreaLoop=0 # 終了判定用
-      
-      
-      
 
     """
     def find_rect_of_target_color(image):
