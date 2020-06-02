@@ -1,6 +1,6 @@
 import motor_class
 import RPi.GPIO as GPIO
-import time
+import time 
 
 Motor = motor_class.motor(8,10,12)
 
