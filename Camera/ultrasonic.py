@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import time
 
-class Hcsr04(object):
+class Ultrasonic(object):
     
     DISTANCE_THRE_START=400.0
     COUNT_DISTANCE_LOOP_THRE_START=40
@@ -10,7 +10,7 @@ class Hcsr04(object):
     COUNT_DISTANCE_LOOP_THRE_END=40
     
     # 距離を読む関数
-    def read_distance():
+    def read_distance(self):
         # 必要なライブラリのインポート・設定
         import RPi.GPIO as GPIO
 
