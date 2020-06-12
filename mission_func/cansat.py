@@ -7,6 +7,7 @@ date:2020/05/26
 #ライブラリの読み込み
 import time
 import RPi.GPIO as GPIO
+import sys
 
 #クラス読み込み
 import constant as ct
@@ -307,26 +308,23 @@ class Cansat(object):
                     self.countDistanceLoopEnd+=1
                     if self.countDistanceLoopEnd>ct.const.COUNT_DISTANCE_LOOP_THRE_END:
                         print("追従終了")
+                        cv2.imwrite('finish.jpg',frame)
                         self.state=6
                         self.lastsate=6
                         break
                 else:
-                    self.countDistanceLoop=0
+                    self.countDistanceLoopEnd=0
                 #矩形の面積を用いた終了判定
                 """
-                if self.area>self.camera.AREA_THRE_END:
+                if self.camera.area>ct.const.AREA_THRE_END:
                     self.countAreaLoopEnd+=1
-                    if self.countAreaLoopEnd>self.camera.COUNT_AREA_LOOP_THRE_END:
+                    if self.countAreaLoopEnd>ct.const.COUNT_AREA_LOOP_THRE_END:
                         break
                 else:
                     self.countAreaLoopEnd=0
                 """
                 
                 cv2.rectangle(frame, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) # フレームを生成
-                # print (direct)
-                # print (angle)
-                # print (cgx, cgy) #重心座標の出力
-                # print (13500//rect[3]) # 距離の概算出力
             cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
             cv2.imshow('red', frame)
             
@@ -359,9 +357,11 @@ class Cansat(object):
             self.leftmotor.stop()
         self.countGoal+ = 1
         
-        self.capture.release()
-        cv2.destroyAllWindows()
-        sys.exit()
+        if self.goalTime==0:
+            self.capture.release()
+            cv2.destroyAllWindows()
+            
+        #sys.exit()
             
 if __name__ == "__main__":
     pass
