@@ -3,6 +3,7 @@
 # Copyright (c) 2017 Michael Calvin McCoy (calvin.mccoy@protonmail.com)
 # The MIT License (MIT) - see LICENSE file
 """
+
 # TODO:
 # Time Since First Fix
 # Distance/Time to Target
@@ -10,8 +11,7 @@
 # Dynamically limit sentences types to parse
 
 from math import floor, modf
-import serial
-import threading
+
 # Import utime or time for fix time handling
 try:
     # Assume running on MicroPython
@@ -21,14 +21,8 @@ except ImportError:
     # Should still support millisecond resolution.
     import time
 
-#import serial
-#from micropyGPS0605 import MicropyGPS
-#import time
-#import threading    
 
-#GPS.gpsread()
-
-class MicropyGPS(object):  #gps data kakunou, update():1mojizutukaiseki
+class MicropyGPS(object):
     """GPS NMEA Sentence Parser. Creates object that stores all relevant GPS data and statistics.
     Parses sentences one character at a time using update(). """
 
@@ -36,13 +30,13 @@ class MicropyGPS(object):  #gps data kakunou, update():1mojizutukaiseki
     SENTENCE_LIMIT = 90
     __HEMISPHERES = ('N', 'S', 'E', 'W')
     __NO_FIX = 1
-   # __FIX_2D = 2
-   # __FIX_3D = 3
-    #__DIRECTIONS = ('N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W',
-     #               'WNW', 'NW', 'NNW')
+    __FIX_2D = 2
+    __FIX_3D = 3
+    __DIRECTIONS = ('N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W',
+                    'WNW', 'NW', 'NNW')
     __MONTHS = ('January', 'February', 'March', 'April', 'May',
                 'June', 'July', 'August', 'September', 'October',
-                'November', 'December')   
+                'November', 'December')
 
     def __init__(self, local_offset=0, location_formatting='ddm'):
         """
@@ -83,7 +77,7 @@ class MicropyGPS(object):  #gps data kakunou, update():1mojizutukaiseki
         self.local_offset = local_offset
 
         # Position/Motion
-        self._latitude = [0, 0.0]
+        self._latitude = [0, 0.0, 'N']
         self._longitude = [0, 0.0, 'W']
         self.coord_format = location_formatting
         self.speed = [0.0, 0.0, 0.0]
@@ -831,51 +825,6 @@ class MicropyGPS(object):  #gps data kakunou, update():1mojizutukaiseki
                            'GNVTG': gpvtg, 'GNGLL': gpgll,
                            'GNGSA': gpgsa,
                           }
-
-
-gps = MicropyGPS(9,'dd') # MicroGPSオブジェクトを生成する。
-
-class GPS(object):
-    def __init__(self):
-        pass
-        #self.gps = micropyGPS0605.MicropyGPS(9,'dd') # MicroGPSオブジェクトを生成する。
-                                     # 引数はタイムゾーンの時差と出力フォーマット
-                                     
-    #gps = micropyGPS.MicropyGPS(9,'dd')
-    def setupGPS(): # GPSモジュールを読み、GPSオブジェクトを更新する
-        #gps = micropyGPS.MicropyGPS(9,'dd') # MicroGPSオブジェクトを生成する。
-        s = serial.Serial('/dev/serial0', 9600, timeout=10)
-        s.readline() # 最初の1行は中途半端なデーターが読めることがあるので、捨てる
-        while True:
-            sentence = s.readline().decode('utf-8') # GPSデーターを読み、文字列に変換する
-            if sentence[0] != '$': # 先頭が'$'でなければ捨てる
-                continue
-            for x in sentence: # 読んだ文字列を解析してGPSオブジェクトにデーターを追加、更新する
-                gps.update(x)
-    
-    def gpsread():
-        
-        #gps = micropyGPS.MicropyGPS(9,'dd') # MicroGPSオブジェクトを生成する。
-    
-        gpsthread = threading.Thread(target=GPS.setupGPS, args=()) # 上の関数を実行するスレッドを生成
-        gpsthread.daemon = True
-        gpsthread.start() # スレッドを起動
-
-        while True:
-            if gps.clean_sentences > 20: # ちゃんとしたデーターがある程度たまったら出力する
-                 h = str('%02d' % (gps.timestamp[0])) if gps.timestamp[0] < 24 else gps.timestamp[0] - 24
-                 m = str('%02d' % (gps.timestamp[1]))
-                 s = str('%02d' % (gps.timestamp[2]))
-                 Time = h + ":" + m + ":" + s
-                 
-                 Lat = float(gps.latitude[0])
-                 Lon = float(gps.longitude[0])
-         
-                 print('時間：', Time, ",", end='')     #main.pyで格納を確認するため、最後は消す
-                 print('緯度: %2.3f ,' % Lat,end='')
-                 print('経度: %2.3f' % Lon)
-            time.sleep(1.0) #ここ変える
-
 
 if __name__ == "__main__":
     pass
