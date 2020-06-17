@@ -2,12 +2,14 @@ import motor_class
 import RPi.GPIO as GPIO
 import time 
 
-Motor = motor_class.motor(8,10,12)
+GPIO.setwarnings(False)
+Motor = motor_class.motor(22,23,12)
 
 print("motor run")
 Motor.go(100)
-Motor.stopslowly()
+time.sleep(3)
 print("motor stop")
+Motor.stop()
 time.sleep(3)
 
 GPIO.cleanup()
