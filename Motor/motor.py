@@ -2,6 +2,7 @@
 
 import RPi.GPIO as GPIO
 import sys
+import time
 
 class motor():
     def __init__(self,pin1,pin2,vref): #各ピンのセットアップ
@@ -40,7 +41,7 @@ class motor():
 #回転ストップ
     def stop(self):
         self.velocity=0
-        self.pwm.ChangeDutyCycle(0)
+        self.pwm.stop(0)
         GPIO.output(self.pin1,0)
         GPIO.output(self.pin2,0)
         
@@ -51,6 +52,7 @@ class motor():
                 self.pwm.ChangeDutyCycle(_velocity)
                 GPIO.output(self.pin1,1)
                 GPIO.output(self.pin2,0)
+                time.sleep(0.5)
             self.velocity=0
         self.pwm.ChangeDutyCycle(0)
         GPIO.output(self.pin1,0)
