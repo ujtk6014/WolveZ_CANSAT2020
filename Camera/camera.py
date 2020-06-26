@@ -11,6 +11,15 @@ class Camera(object):
     AREA_THRE_START=2500
     COUNT_AREA_LOOP_THRE_START=10
     COG_THRE_START=15000
+    
+    def __init__(self):
+        self.cgx=0
+        self.cgy=0
+        self.cgxs=0.0
+        self.cgys=0.0
+        self.angle=0.0
+        self.direct=0
+        self.area=0.0
 
     def find_rect_of_target_color(self,image):
       hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV_FULL)
@@ -28,27 +37,23 @@ class Camera(object):
       return rects
 
     def find_center_of_gravity(self,data):
-        a=data[0]+data[2]//2  
-        b=data[1]+data[3]//2
-        return a,b
+        self.cgx=data[0]+data[2]//2  
+        self.cgy=data[1]+data[3]//2
 
     def find_direction(self,x_coordinate):
         angle=(x_coordinate-320)*31.1/320
         if angle>10:
-            dire=1 # 右
+            self.direct=1 # 右
         elif angle<-10:
-            dire=-1 # 左
+            self.direct=-1 # 左
         else:
-            dire=0# 直進
-        return dire
+            self.direct=0# 直進
             
     def find_angle(self,x_coordinate):
-        angle=abs(x_coordinate-320)*31.1/320
-        return angle
+        self.angle=abs(x_coordinate-320)*31.1/320
     
     def find_area(self,data):
-        a=data[2]*data[3]
-        return a
+        self.area=data[2]*data[3]
 
     """
     def find_rect_of_target_color(image):

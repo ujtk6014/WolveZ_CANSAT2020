@@ -4,20 +4,24 @@ import time
 
 class Ultrasonic(object):
     
+    #ミッション関数に組み込む際には削除
     DISTANCE_THRE_START=400.0
-    COUNT_DISTANCE_LOOP_THRE_START=40
+    COUNT_DISTANCE_LOOP_THRE_START=30
     DISTANCE_THRE_END=50.0
     COUNT_DISTANCE_LOOP_THRE_END=40
     
+    def __init__(self):
+        self.dist=0.0
+    
     # 距離を読む関数
-    def read_distance(self):
+    def getDistance(self):
         # 必要なライブラリのインポート・設定
         import RPi.GPIO as GPIO
 
         # 使用するピンの設定
         GPIO.setmode(GPIO.BCM)
-        TRIG = 2 # GPIO02(Pin3)
-        ECHO = 3 # GPIO03(Pin5)
+        TRIG = 24 # GPIO02(Pin3)
+        ECHO = 23 # GPIO03(Pin5)
 
         # ピンのモードをそれぞれ出力用と入力用に設定
         GPIO.setup(TRIG,GPIO.OUT)
@@ -51,7 +55,7 @@ class Ultrasonic(object):
         # 500cm 以上の場合はノイズと判断する
         #if distance <= 500:
             #return distance
-        return distance        
+        self.dist=distance        
 
         """
         while True:
