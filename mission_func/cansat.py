@@ -26,7 +26,7 @@ class Cansat(object):
         self.rightmotor = motor.motor(ct.const.RIGHT_MOTOR_VREF_PIN,ct.const.RIGHT_MOTOR_IN1_PIN,ct.const.RIGHT_MOTOR_IN2_PIN)
         self.leftmotor = motor.motor(ct.const.LEFT_MOTOR_VREF_PIN,ct.const.LEFT_MOTOR_IN1_PIN,ct.const.LEFT_MOTOR_IN2_PIN)
         self.gps = gps.GPS()
-        self.bno055 = bno055.BNO()
+        self.bno055 = bno055.BNO055()
         self.radio = radio.radio()
         self.ultrasonic = ultrasonic.Ultrasonic()
         self.RED_LED = led.led(ct.const.RED_LED_PIN)
