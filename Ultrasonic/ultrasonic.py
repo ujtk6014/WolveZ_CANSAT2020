@@ -49,17 +49,5 @@ class Ultrasonic(object):
         # 500cm 以上の場合はノイズと判断する
         #if distance <= 500:
             #return distance
-        self.dist=distance        
-
-        """
-        while True:
-            start_time = time.time()
-            distance = read_distance()
-            if distance:
-                print "距離: %.1f cm" % (distance)
-
-            # 次のループまでの間sleepする
-            wait = start_time + 1 - time.time()
-            if wait > 0:
-                time.sleep(wait)
-        """
+        self.dist=distance
+        
