@@ -17,17 +17,10 @@ MODULE_AUTHOR("Adriano Marto Reis");
 MODULE_DESCRIPTION("Software-UART for Raspberry Pi");
 MODULE_VERSION("0.2");
 
-<<<<<<< HEAD
 static int gpio_tx = 11;
 module_param(gpio_tx, int, 0);
 
 static int gpio_rx = 9;
-=======
-static int gpio_tx = 13;
-module_param(gpio_tx, int, 0);
-
-static int gpio_rx = 19;
->>>>>>> 907b748ce24205f39f56f12084707cd78aa43d66
 module_param(gpio_rx, int, 0);
 
 // Module prototypes.
