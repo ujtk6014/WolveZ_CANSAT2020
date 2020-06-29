@@ -2,6 +2,8 @@ import cv2
 #import numpy as np
 import sys
 
+import constant as ct
+
 import camera
 import ultrasonic
 import bno055
@@ -36,6 +38,7 @@ class Cansat(object):
     
     def setup(self):
         self.bno055.setupBno(True)
+        self.camera.setupCamera()#ガンマ補正のためのセットアップ
 
     def sensor(self):
         self.bno055.bnoread()
@@ -44,10 +47,10 @@ class Cansat(object):
 
     def waiting(self):
         self.ultrasonic.getDistance()
-        print(self.ultrasonic.dist)
-        if self.ultrasonic.dist<self.ultrasonic.DISTANCE_THRE_START:
+        #print(self.ultrasonic.dist)
+        if self.ultrasonic.dist<ct.const.DISTANCE_THRE_START:
             self.countDistanceLoopStart+=1
-            if self.countDistanceLoopStart>self.ultrasonic.COUNT_DISTANCE_LOOP_THRE_START:
+            if self.countDistanceLoopStart>ct.const.COUNT_DISTANCE_LOOP_THRE_START:
                 print("対象認知＆カメラ処理開始")
                 self.state=1
                 self.countDistanceLoopStart=0
@@ -58,10 +61,18 @@ class Cansat(object):
     def running(self):
         #写真撮影用
         self.timestep+=1
-        print(self.ultrasonic.dist)
+        #print(self.ultrasonic.dist)
         _, frame = self.capture.read() # 動画の読み込み
         # frame=cv2.resize(frame, (640,480)) # プレビューサイズ（いじらなくてよい）
-        rects = self.camera.find_rect_of_target_color(frame) # 矩形の情報作成
+        
+        #以下でガンマ補正
+        gray=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        mean, stddev=cv2.meanStdDev(gray)
+        if stddev>ct.const.BLACKLIGHT_SD_UP or stddev<ct.const.BLACKLIGHT_SD_DOWN:
+            frame=cv2.LUT(frame,self.camera.gamma_cvt)
+        
+        # 矩形の情報作成
+        rects = self.camera.find_rect_of_target_color(frame) 
         
         # 一定間隔で状況を撮影
         if self.timestep%200==0:
@@ -78,13 +89,13 @@ class Cansat(object):
             self.camera.find_area(rect) # 矩形の面積算出
             
             #追従開始判定
-            if self.following==0 and self.camera.area>self.camera.AREA_THRE_START:
+            if self.following==0 and self.camera.area>ct.const.AREA_THRE_START:
                 self.countAreaLoopStart+=1
                 if self.countAreaLoopStart==1:
                     self.camera.cgxs=self.camera.cgx
                     self.camera.cgys=self.camera.cgy
-                if self.countAreaLoopStart>self.camera.COUNT_AREA_LOOP_THRE_START:
-                    if pow(self.camera.cgx-self.camera.cgxs,2)+pow(self.camera.cgy-self.camera.cgys,2)>self.camera.COG_THRE_START:
+                if self.countAreaLoopStart>ct.const.COUNT_AREA_LOOP_THRE_START:
+                    if pow(self.camera.cgx-self.camera.cgxs,2)+pow(self.camera.cgy-self.camera.cgys,2)>ct.const.COG_THRE_START:
                         print("追従開始")
                         self.following=1
                         self.countAreaLoopStart=0
@@ -106,9 +117,9 @@ class Cansat(object):
                 #ここにモーターへの指示内容をかく！
             
             #見失い判定
-            if self.following==1 and self.camera.area<self.camera.AREA_THRE_LOSE:
+            if self.following==1 and self.camera.area<ct.const.AREA_THRE_LOSE:
                 self.countAreaLoopLose+=1
-                if self.countAreaLoopLose>self.camera.COUNT_AREA_LOOP_THRE_LOSE:
+                if self.countAreaLoopLose>ct.const.COUNT_AREA_LOOP_THRE_LOSE:
                     self.state=0
                     self.countAreaLoopLose=0
                     self.following=0
@@ -119,9 +130,9 @@ class Cansat(object):
           
             #超音波センサを用いた終了判定
             self.ultrasonic.getDistance()
-            if self.following==1 and self.ultrasonic.dist<self.ultrasonic.DISTANCE_THRE_END:
+            if self.following==1 and self.ultrasonic.dist<ct.const.DISTANCE_THRE_END:
                 self.countDistanceLoopEnd+=1
-                if self.countDistanceLoopEnd>self.ultrasonic.COUNT_DISTANCE_LOOP_THRE_END:
+                if self.countDistanceLoopEnd>ct.const.COUNT_DISTANCE_LOOP_THRE_END:
                     print("追従終了")
                     self.state=2
             else:
@@ -138,15 +149,16 @@ class Cansat(object):
             
             cv2.rectangle(frame, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) # フレームを生成
             # print (13500//rect[3]) # 距離の概算出力
+        
         cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
-        frame=cv2.flip(frame,0)
+        #frame=cv2.flip(frame,0)#上下反転
         cv2.imshow('red', frame)
         cv2.waitKey(1)
         
         #画面に赤い要素が全くない場合の見失い判定
         if self.following==1 and len(rects)==0:
             self.countAreaLoopLose+=1
-            if self.countAreaLoopLose>self.camera.COUNT_AREA_LOOP_THRE_LOSE:
+            if self.countAreaLoopLose>ct.const.COUNT_AREA_LOOP_THRE_LOSE:
                 self.state=0
                 self.countAreaLoopLose=0
                 self.following=0
