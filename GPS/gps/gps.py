@@ -3,12 +3,15 @@ import micropyGPS
 import time
 import threading
 
-class GPS(object):
+class Gps(object):        
+    
     def __init__(self):
         self.mgps = micropyGPS.MicropyGPS(9,'dd') 
         self.Time = 0
         self.Lat = 0
         self.Lon = 0
+        #self.gps_device = "dev/serial0"  # ES920LRデバイス名
+        
         
     def rungps(self): # GPSモジュールを読み、GPSオブジェクトを更新する
         s = serial.Serial('/dev/serial0', 9600, timeout=10)
@@ -20,7 +23,7 @@ class GPS(object):
             for x in sentence: # 読んだ文字列を解析してGPSオブジェクトにデーターを追加、更新する
                 self.mgps.update(x)
 
-    def setupGPS(self):
+    def setupGps(self):
         gpsthread = threading.Thread(target=self.rungps, args=()) # 上の関数を実行するスレッドを生成
         gpsthread.daemon = True
         gpsthread.start() # スレッドを起動
