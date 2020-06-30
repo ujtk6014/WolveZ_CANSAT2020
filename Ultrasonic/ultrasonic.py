@@ -2,22 +2,20 @@
 # -*- coding: utf-8 -*-
 import time
 
-class Hcsr04(object):
+class Ultrasonic(object):
     
-    DISTANCE_THRE_START=400.0
-    COUNT_DISTANCE_LOOP_THRE_START=40
-    DISTANCE_THRE_END=50.0
-    COUNT_DISTANCE_LOOP_THRE_END=40
+    def __init__(self):
+        self.dist=0.0
     
     # 距離を読む関数
-    def read_distance():
+    def getDistance(self):
         # 必要なライブラリのインポート・設定
         import RPi.GPIO as GPIO
 
         # 使用するピンの設定
         GPIO.setmode(GPIO.BCM)
-        TRIG = 2 # GPIO02(Pin3)
-        ECHO = 3 # GPIO03(Pin5)
+        TRIG = 24 # GPIO02(Pin3)
+        ECHO = 23 # GPIO03(Pin5)
 
         # ピンのモードをそれぞれ出力用と入力用に設定
         GPIO.setup(TRIG,GPIO.OUT)
@@ -51,17 +49,5 @@ class Hcsr04(object):
         # 500cm 以上の場合はノイズと判断する
         #if distance <= 500:
             #return distance
-        return distance        
-
-        """
-        while True:
-            start_time = time.time()
-            distance = read_distance()
-            if distance:
-                print "距離: %.1f cm" % (distance)
-
-            # 次のループまでの間sleepする
-            wait = start_time + 1 - time.time()
-            if wait > 0:
-                time.sleep(wait)
-        """
+        self.dist=distance
+        
