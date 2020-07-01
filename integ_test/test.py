@@ -11,45 +11,46 @@ import camera
 import cv2
 import sys
 import constant as ct
-
+import RPi.GPIO as GPIO
 
 class Test(object):
     
     def __init__(self):
         #オブジェクトの生成
         self.gps = gps.GPS()
-        self.bno055 = bno055.BNO()
-        self.radio = radio.radio()
-        ultrasonic.setupUltrasonic(ct.const.ULTRASONIC_TRIG,ct.const.ULTRASONIC_ECHO)
+        self.bno055 = bno055.BNO055()
+        self.ultrasonic = ultrasonic.Ultrasonic()
         self.camera=camera.Camera()
         
     def setup(self):
         self.gps.setupGps()
-        if self.bno.begin() is not True:
+        if self.bno055.begin() is not True:
             print("Error initializing device")
             exit()
-        self.bno.setExternalCrystalUse(True)
-        
         
     
     def sensorWrite(self):
         self.gps.gpsread()
         self.bno055.bnoread()
-        ultrasonic.getDistance()
-        datalog = str(self.timer) + ","\
-                  + str(self.gps.Time) + ","\
+        self.ultrasonic.getDistance()
+        Ax=round(self.bno055.Ax,3)
+        Ay=round(self.bno055.Ay,3)
+        Az=round(self.bno055.Az,3)
+        dist=round(self.ultrasonic.dist,2)
+        
+        datalog = str(self.gps.Time) + ","\
                   + str(self.gps.Lat) + ","\
                   + str(self.gps.Lon) + ","\
                   + str(self.bno055.gx) + ","\
                   + str(self.bno055.gy) + ","\
                   + str(self.bno055.gz) + ","\
-                  + str(self.bno055.Ax) + ","\
-                  + str(self.bno055.Ay) + ","\
-                  + str(self.bno055.Az) + ","\
-                  + str(self.ultrasonic.distance)
+                  + str(Ax) + ","\
+                  + str(Ay) + ","\
+                  + str(Az) + ","\
+                  + str(dist)
         print(datalog)
     
-    def camera(self):
+    def cam(self):
         #以下に画像処理走行プログラム
             _, frame = self.capture.read() # 動画の読み込み
             # frame=cv2.resize(frame, (640,480)) # プレビューサイズ（いじらなくてよい）
@@ -69,13 +70,13 @@ class Test(object):
 if __name__ == "__main__":
     test=Test()
     test.setup()
-    self.capture = cv2.VideoCapture(0)
+    test.capture = cv2.VideoCapture(0)
     try:
         while True:
             test.sensorWrite()
-            sleep(0.01)
-            test.camera()
-            sleep(0.01)
+            time.sleep(0.01)
+            test.cam()
+            time.sleep(0.01)
     except KeyboardInterrupt:
         print('finished')
         GPIO.cleanup()
