@@ -7,8 +7,8 @@ import gps
 import ultrasonic
 import bno055
 import time
-#import camera
-#import cv2
+import camera
+import cv2
 import sys
 import constant as ct
 import RPi.GPIO as GPIO
@@ -22,7 +22,7 @@ class Test(object):
         self.bno055 = bno055.BNO055()
         self.ultrasonic = ultrasonic.Ultrasonic()
         self.radio=radio.radio()
-        #self.camera=camera.Camera()
+        self.camera=camera.Camera()
         
     def setup(self):
         self.radio.setupRadio()
@@ -52,7 +52,7 @@ class Test(object):
                   + str(self.Az) + ","\
                   + str(self.dist)
         print(datalog)
-    """
+    
     def cam(self):
         #以下に画像処理走行プログラム
             _, frame = self.capture.read() # 動画の読み込み
@@ -69,30 +69,30 @@ class Test(object):
             cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
             cv2.imshow('red', frame)
             cv2.waitKey(1)
-    """        
+     
     def sendRadio(self):
         datalog = str(self.gps.Lat) + ","\
                   + str(self.gps.Lon) + ","\
                   + str(self.bno055.gx) + ","\
                   + str(self.bno055.gy) + ","\
                   + str(self.bno055.gz) + ","\
-                  + str(self.Ax) + ","\
-                  + str(self.Ay) + ","\
-                  + str(self.Az) + ","\
-                  + str(self.dist)
+                  #+ str(self.Ax) + ","\
+                  #+ str(self.Ay) + ","\
+                  #+ str(self.Az) + ","\
+                  #+ str(self.dist)
         self.radio.sendData(datalog) #データを送信
 
 if __name__ == "__main__":
     test=Test()
     test.setup()
-    #test.capture = cv2.VideoCapture(0)
+    test.capture = cv2.VideoCapture(0)
     try:
         while True:
             test.sensorWrite()
             test.sendRadio()
             time.sleep(1)
-            #test.cam()
-            #time.sleep(0.01)
+            test.cam()
+            time.sleep(0.01)
     except KeyboardInterrupt:
         print('finished')
         GPIO.cleanup()
