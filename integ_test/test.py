@@ -12,6 +12,7 @@ import cv2
 import sys
 import constant as ct
 import RPi.GPIO as GPIO
+import radio
 
 class Test(object):
     
@@ -23,6 +24,7 @@ class Test(object):
         self.camera=camera.Camera()
         
     def setup(self):
+        radio.setupRadio()
         self.gps.setupGps()
         if self.bno055.begin() is not True:
             print("Error initializing device")
@@ -33,10 +35,10 @@ class Test(object):
         self.gps.gpsread()
         self.bno055.bnoread()
         self.ultrasonic.getDistance()
-        Ax=round(self.bno055.Ax,3)
-        Ay=round(self.bno055.Ay,3)
-        Az=round(self.bno055.Az,3)
-        dist=round(self.ultrasonic.dist,2)
+        self.Ax=round(self.bno055.Ax,3)
+        self.Ay=round(self.bno055.Ay,3)
+        self.Az=round(self.bno055.Az,3)
+        self.dist=round(self.ultrasonic.dist,2)
         
         datalog = str(self.gps.Time) + ","\
                   + str(self.gps.Lat) + ","\
@@ -44,10 +46,10 @@ class Test(object):
                   + str(self.bno055.gx) + ","\
                   + str(self.bno055.gy) + ","\
                   + str(self.bno055.gz) + ","\
-                  + str(Ax) + ","\
-                  + str(Ay) + ","\
-                  + str(Az) + ","\
-                  + str(dist)
+                  + str(self.Ax) + ","\
+                  + str(self.Ay) + ","\
+                  + str(self.Az) + ","\
+                  + str(self.dist)
         print(datalog)
     
     def cam(self):
@@ -66,6 +68,27 @@ class Test(object):
             cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
             cv2.imshow('red', frame)
             cv2.waitKey(1)
+            
+    def sensor(self):
+        self.gps.gpsread()
+        self.bno055.bnoread()
+        self.ultrasonic.getDistance()
+        self.writeData()#txtファイルへのログの保存
+        if not self.state == 1 and not self.state == 2: #preparingとflyingのときは電波を発しない
+            self.sendRadio()#LoRaでログを送信
+    
+    def sendRadio(self):
+    datalog = str(self.gps.Time) + ","\
+                  + str(self.gps.Lat) + ","\
+                  + str(self.gps.Lon) + ","\
+                  + str(self.bno055.gx) + ","\
+                  + str(self.bno055.gy) + ","\
+                  + str(self.bno055.gz) + ","\
+                  + str(self.Ax) + ","\
+                  + str(self.Ay) + ","\
+                  + str(self.Az) + ","\
+                  + str(self.dist)
+    self.radio.sendData(datalog) #データを送信
 
 if __name__ == "__main__":
     test=Test()
@@ -74,6 +97,7 @@ if __name__ == "__main__":
     try:
         while True:
             test.sensorWrite()
+            test.sensor()
             time.sleep(0.01)
             test.cam()
             time.sleep(0.01)
