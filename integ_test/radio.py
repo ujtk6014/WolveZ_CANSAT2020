@@ -39,6 +39,6 @@ class radio(object):
     # ES920LRデータ送信メソッド
     def sendData(self, datalog):        
         # LoRa(ES920LR)データ送信
-        print(datalog)
+        #print(datalog)
         self.sendDevice.cmd_lora(datalog)
          

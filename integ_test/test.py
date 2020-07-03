@@ -7,8 +7,8 @@ import gps
 import ultrasonic
 import bno055
 import time
-import camera
-import cv2
+#import camera
+#import cv2
 import sys
 import constant as ct
 import RPi.GPIO as GPIO
@@ -21,10 +21,11 @@ class Test(object):
         self.gps = gps.GPS()
         self.bno055 = bno055.BNO055()
         self.ultrasonic = ultrasonic.Ultrasonic()
-        self.camera=camera.Camera()
+        self.radio=radio.radio()
+        #self.camera=camera.Camera()
         
     def setup(self):
-        radio.setupRadio()
+        self.radio.setupRadio()
         self.gps.setupGps()
         if self.bno055.begin() is not True:
             print("Error initializing device")
@@ -51,7 +52,7 @@ class Test(object):
                   + str(self.Az) + ","\
                   + str(self.dist)
         print(datalog)
-    
+    """
     def cam(self):
         #以下に画像処理走行プログラム
             _, frame = self.capture.read() # 動画の読み込み
@@ -68,18 +69,9 @@ class Test(object):
             cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
             cv2.imshow('red', frame)
             cv2.waitKey(1)
-            
-    def sensor(self):
-        self.gps.gpsread()
-        self.bno055.bnoread()
-        self.ultrasonic.getDistance()
-        self.writeData()#txtファイルへのログの保存
-        if not self.state == 1 and not self.state == 2: #preparingとflyingのときは電波を発しない
-            self.sendRadio()#LoRaでログを送信
-    
+    """        
     def sendRadio(self):
-    datalog = str(self.gps.Time) + ","\
-                  + str(self.gps.Lat) + ","\
+        datalog = str(self.gps.Lat) + ","\
                   + str(self.gps.Lon) + ","\
                   + str(self.bno055.gx) + ","\
                   + str(self.bno055.gy) + ","\
@@ -88,19 +80,19 @@ class Test(object):
                   + str(self.Ay) + ","\
                   + str(self.Az) + ","\
                   + str(self.dist)
-    self.radio.sendData(datalog) #データを送信
+        self.radio.sendData(datalog) #データを送信
 
 if __name__ == "__main__":
     test=Test()
     test.setup()
-    test.capture = cv2.VideoCapture(0)
+    #test.capture = cv2.VideoCapture(0)
     try:
         while True:
             test.sensorWrite()
-            test.sensor()
-            time.sleep(0.01)
-            test.cam()
-            time.sleep(0.01)
+            test.sendRadio()
+            time.sleep(1)
+            #test.cam()
+            #time.sleep(0.01)
     except KeyboardInterrupt:
         print('finished')
         GPIO.cleanup()
