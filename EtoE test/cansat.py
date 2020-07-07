@@ -101,9 +101,9 @@ class Cansat(object):
                   + str(self.ultrasonic.distance) + ","\
                   + str(self.rightmotor.velocity) + ","\
                   + str(self.leftmotor.velocity)
-        
-        with open("test.txt",mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
-            test.write(datalog + '\n')
+        print(datalog)
+        #with open("test.txt",mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
+            #test.write(datalog + '\n')
           
     def sendRadio(self):
         datalog = str(self.timer) + ","\
@@ -143,9 +143,9 @@ class Cansat(object):
             self.RED_LED.led_on()
             self.BLUE_LED.led_off()
             self.GREEN_LED.led_off()
+            self.rightmotor.stop()
+            self.leftmotor.stop()
             
-        self.rightmotor.stop()
-        self.leftmotor.stop()
         #self.countPreLoop+ = 1
         if not self.preparingTime == 0:
             if time.time() - self.preparingTime > ct.const.PREPARING_TIME_THRE:
@@ -158,9 +158,9 @@ class Cansat(object):
             self.RED_LED.led_off()
             self.BLUE_LED.led_off()
             self.GREEN_LED.led_off()
+            self.rightmotor.stop()
+            self.leftmotor.stop()
             
-        self.rightmotor.stop()
-        self.leftmotor.stop()
         if GPIO.input(ct.const.FLIGHTPIN_PIN) == GPIO.HIGH:#highかどうか＝フライトピンが外れているかチェック
             self.countFlyLoop+=1
             if self.countFlyLoop > ct.const.COUNT_FLIGHTPIN_THRE:#一定時間HIGHだったらステート移行
@@ -197,18 +197,17 @@ class Cansat(object):
             self.RED_LED.led_off()
             self.BLUE_LED.led_off()
             self.GREEN_LED.led_on()
-            
-        GPIO.output(self.RELEASING_PIN,HIGH)
+            GPIO.output(self.RELEASING_PIN,1)
         
         if not self.landingTime == 0:
             if time.time()-self.landingTime > ct.const.RELEASING_TIME_THRE:
-                GPIO.output(ct.const.RELEASING_PIN,LOW) #焼き切りが危ないのでlowにしておく
+                GPIO.output(ct.const.RELEASING_PIN,0) #焼き切りが危ないのでlowにしておく
                 self.state = 4
                 self.laststate = 4
             
     def waiting(self):
         if self.waitingTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
-            GPIO.output(ct.const.RELEASING_PIN,LOW) #焼き切りしっぱなしでは怖いので保険
+            GPIO.output(ct.const.RELEASING_PIN,0) #焼き切りしっぱなしでは怖いので保険
             self.waitingTime = time.time()
             self.RED_LED.led_off()
             self.BLUE_LED.led_on()
@@ -337,6 +336,8 @@ class Cansat(object):
     def goal(self):
         if self.goalTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
             self.goalTime = time.time()
+            self.capture.release()
+            cv2.destroyAllWindows()
             self.RED_LED.led_off()
             self.BLUE_LED.led_off()
             self.GREEN_LED.led_off()
@@ -348,10 +349,7 @@ class Cansat(object):
             self.rightmotor.stop()
             self.leftmotor.stop()
         self.countGoal+ = 1
-        
-        if self.goalTime==0:
-            self.capture.release()
-            cv2.destroyAllWindows()
+            
             
         #sys.exit()
             
