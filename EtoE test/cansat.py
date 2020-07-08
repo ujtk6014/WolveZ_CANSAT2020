@@ -2,12 +2,14 @@
 Keio Wolve'Z cansat2020
 mission function
 Author Yuji Tanaka
-date:2020/05/26
+last update:2020/07/08
 """
 #ライブラリの読み込み
 import time
 import RPi.GPIO as GPIO
 import sys
+import cv2
+import numpy as np
 
 #クラス読み込み
 import constant as ct
@@ -64,16 +66,18 @@ class Cansat(object):
         self.countDistanceLoopStart=0 # 距離による開始判定
         self.countDistanceLoopEnd=0 # 距離による終了判定
         
-        #GIOP設定
+        #GPIO設定
         GPIO.setmode(GPIO.BCM) #GPIOの設定
         GPIO.setup(ct.const.FLIGHTPIN_PIN,GPIO.IN) #フライトピン用
-        GPIO.setup(ct.const.BURNING_PIN,GPIO.OUT) #焼き切り用のピンの設定
+        GPIO.setup(ct.const.RELEASING_PIN,GPIO.OUT) #焼き切り用のピンの設定
     
     def setup(self):
-        gps.setupGps()
-        bno055.setupBno()
-        radio.setupRadio()
-        ultrasonic.setupUltrasonic()
+        self.gps.setupGps()
+        self.radio.setupRadio()
+        self.bno055.setupBno()
+        if self.bno055.begin() is not True:
+            print("Error initializing device")
+            exit()
         
     def sensor(self):
         self.gps.gpsread()
@@ -85,20 +89,21 @@ class Cansat(object):
     
     def writeData(self):
         self.timer = 1000*(time.time() - self.startTime) #経過時間 (ms)
-        self.timer = int(timer)
+        self.timer = int(self.timer)
+        self.Ax=round(self.bno055.Ax,3)
+        self.Ay=round(self.bno055.Ay,3)
+        self.Az=round(self.bno055.Az,3)
+        self.dist=round(self.ultrasonic.dist,2)
         #ログデータ作成。\マークを入れることで改行してもコードを続けて書くことができる
         datalog = str(self.timer) + ","\
                   + str(self.state) + ","\
                   + str(self.gps.Time) + ","\
                   + str(self.gps.Lat) + ","\
                   + str(self.gps.Lon) + ","\
-                  + str(self.bno055.gx) + ","\
-                  + str(self.bno055.gy) + ","\
-                  + str(self.bno055.gz) + ","\
-                  + str(self.bno055.Ax) + ","\
-                  + str(self.bno055.Ay) + ","\
-                  + str(self.bno055.Az) + ","\
-                  + str(self.ultrasonic.distance) + ","\
+                  + str(self.Ax) + ","\
+                  + str(self.Ay) + ","\
+                  + str(self.Az) + ","\
+                  + str(self.dist) + ","\
                   + str(self.rightmotor.velocity) + ","\
                   + str(self.leftmotor.velocity)
         print(datalog)
@@ -106,15 +111,11 @@ class Cansat(object):
             #test.write(datalog + '\n')
           
     def sendRadio(self):
-        datalog = str(self.timer) + ","\
-                  + str(self.state) + ","\
+        datalog = str(self.state) + ","\
                   + str(self.gps.Time) + ","\
                   + str(self.gps.Lat) + ","\
                   + str(self.gps.Lon) + ","\
-                  + str(self.bno055.gx) + ","\
-                  + str(self.bno055.gy) + ","\
-                  + str(self.bno055.gz) + ","\
-                  + str(self.ultrasonic.distance) + ","\
+                  + str(self.ultrasonic.dist) + ","\
                   + str(self.rightmotor.velocity) + ","\
                   + str(self.leftmotor.velocity)
         self.radio.sendData(datalog) #データを送信
@@ -145,7 +146,6 @@ class Cansat(object):
             self.GREEN_LED.led_off()
             self.rightmotor.stop()
             self.leftmotor.stop()
-            
         #self.countPreLoop+ = 1
         if not self.preparingTime == 0:
             if time.time() - self.preparingTime > ct.const.PREPARING_TIME_THRE:
@@ -156,11 +156,18 @@ class Cansat(object):
         if self.flyingTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
             self.flyingTime = time.time()
             self.RED_LED.led_off()
-            self.BLUE_LED.led_off()
+            self.BLUE_LED.led_on()
             self.GREEN_LED.led_off()
             self.rightmotor.stop()
             self.leftmotor.stop()
-            
+        
+        #フライトピンがない場合は以下のように時間でステート移行させる
+        if not self.flyingTime == 0:
+            if time.time() - self.flyingTime > ct.const.FLYING_TIME_THRE:
+                self.state = 2
+                self.laststate = 2
+        """
+        #フライトピンを使用するときはコメントを外して以下のコードを使用
         if GPIO.input(ct.const.FLIGHTPIN_PIN) == GPIO.HIGH:#highかどうか＝フライトピンが外れているかチェック
             self.countFlyLoop+=1
             if self.countFlyLoop > ct.const.COUNT_FLIGHTPIN_THRE:#一定時間HIGHだったらステート移行
@@ -168,15 +175,16 @@ class Cansat(object):
                 self.laststate = 2
         else:
             self.countFlyLoop = 0 #何故かLOWだったときカウントをリセット
-                
+        """     
     def dropping(self):
         if self.droppingTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
             self.droppingTime = time.time()
             self.RED_LED.led_off()
-            self.BLUE_LED.led_on()
-            self.GREEN_LED.led_off()
+            self.BLUE_LED.led_off()
+            self.GREEN_LED.led_on()
             
-        if (pow(bno055.Ax,2) + pow(bno055.Ay,2) + pow(bno055.Az,2)) < pow(self.ACC_THRE,2):#加速度が閾値以下で着地判定
+        #加速度が小さくなったら着地判定
+        if (pow(self.bno055.Ax,2) + pow(self.bno055.Ay,2) + pow(self.bno055.Az,2)) < pow(ct.const.ACC_THRE,2):#加速度が閾値以下で着地判定
             self.countDropLoop+=1
             if self.countDropLoop > ct.const.COUNT_ACC_LOOP_THRE:
                 self.state = 3
@@ -184,7 +192,7 @@ class Cansat(object):
         else:
             self.countDropLoop = 0 #初期化の必要あり
         """
-        #時間で着地判定
+        #（予備）時間で着地判定
         if not self.droppingTime == 0:
             if time.time() - self.droppingTime > ct.const.LANDING_TIME_THRE:
                 self.state = 3
@@ -194,11 +202,13 @@ class Cansat(object):
     def landing(self):
         if self.landingTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
             self.landingTime = time.time()
-            self.RED_LED.led_off()
-            self.BLUE_LED.led_off()
-            self.GREEN_LED.led_on()
-            GPIO.output(self.RELEASING_PIN,1)
+            self.RED_LED.led_on()
+            self.BLUE_LED.led_on()
+            self.GREEN_LED.led_off()
+            
+        GPIO.output(ct.const.RELEASING_PIN,1)
         
+        #時間でステート移行させる
         if not self.landingTime == 0:
             if time.time()-self.landingTime > ct.const.RELEASING_TIME_THRE:
                 GPIO.output(ct.const.RELEASING_PIN,0) #焼き切りが危ないのでlowにしておく
@@ -296,7 +306,7 @@ class Cansat(object):
                 self.countAreaLoopLose=0
           
             #超音波センサを用いた終了判定
-            self.ultrasonic.getDistance()
+            #self.ultrasonic.getDistance()
             if self.following==1 and self.ultrasonic.dist<ct.const.DISTANCE_THRE_END:
                 self.countDistanceLoopEnd+=1
                 if self.countDistanceLoopEnd>ct.const.COUNT_DISTANCE_LOOP_THRE_END:
@@ -343,12 +353,12 @@ class Cansat(object):
             self.GREEN_LED.led_off()
             
         if self.countGoal < ct.const.COUNT_GOAL_LOOP_THRE:
-            self.rightmotor.stopSlowly()
-            self.leftmotor.stopSlowly()
+            self.rightmotor.stopslowly()
+            self.leftmotor.stopslowly()
         else:
             self.rightmotor.stop()
             self.leftmotor.stop()
-        self.countGoal+ = 1
+        self.countGoal+= 1
             
             
         #sys.exit()

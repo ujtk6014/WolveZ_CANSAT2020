@@ -8,6 +8,7 @@ class Ultrasonic(object):
   
     def __init__(self):
         self.dist=0.0
+
         # 使用するピンの設定
         GPIO.setmode(GPIO.BCM)
 
@@ -15,9 +16,10 @@ class Ultrasonic(object):
         GPIO.setup(ct.const.ULTRASONIC_TRIG,GPIO.OUT)
         GPIO.setup(ct.const.ULTRASONIC_ECHO,GPIO.IN)
         GPIO.output(ct.const.ULTRASONIC_TRIG, GPIO.LOW)
-            
+        
     # 距離を読む関数
     def getDistance(self):
+        
         # TRIG に短いパルスを送る
         GPIO.output(ct.const.ULTRASONIC_TRIG, GPIO.HIGH)
         time.sleep(0.00001)
