@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 #GPSのセットアップ
 #Last update 2020/07/08 Yuji Tanaka
 #<<実行方法>>
@@ -7,11 +7,10 @@
 #上記２つのどちらかのコマンドをターミナルに打ち込む
 
 #/boot/cmdline.txtの修正
-sudo cat /boot/cmdline.txt|tr -d console=serial0,115200
-sudo cat /boot/cmdline.txt
+sudo sed -i "s/console=serial0,115200//g" /boot/cmdline.txt
 
 #Serial Mosuleのインストール
-sudo apt-get install python-serial
+sudo apt-get install python-serial -qq
 
 #実行権限を与える
 sudo chmod +x setup_gps.sh

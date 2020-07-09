@@ -7,14 +7,16 @@
 #上記２つのどちらかのコマンドをターミナルに打ち込む
 
 #moduleファイルに以下の項目を追加
-sudo echo "i2c-bcm2708\ni2c-dev">>/etc/modules
-
+sudo bash -c "cat >> /etc/modules" << EOF
+i2c-bcn2708
+i2c-dev
+EOF
 
 #update
-sudo apt-get update
+sudo apt-get update -qq
 
 #i2cのtoolをインストール
-sudo apt-get install -y python-smbus i2c-tools
+sudo apt-get install -y python-smbus i2c-tools -qq
 
 #設定完了の喜びの舞
 echo -e "<<設定完了のおしらせ>>\nおめでとう！設定完了だ！ともに高みへゆこう\n10秒後にラズパイを再起動します。"
