@@ -4,6 +4,7 @@ mission function
 Author Yuji Tanaka
 last update:2020/07/08
 """
+
 #ライブラリの読み込み
 import time
 import RPi.GPIO as GPIO
