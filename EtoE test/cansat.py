@@ -44,7 +44,7 @@ class Cansat(object):
         self.landstate = 0 #landing statenの中でモータを一定時間回すためにlandのなかでもステート管理するため
         
         #変数
-        self.state = 6
+        self.state = 0
         self.laststate = 0
         self.following=0 # state1の中で、カメラによる検知中か追従中かを区別、どちらもカメラを回しながら行いたいため
         self.landstate =0
@@ -100,6 +100,7 @@ class Cansat(object):
         self.dist=round(self.ultrasonic.dist,2)
         #ログデータ作成。\マークを入れることで改行してもコードを続けて書くことができる
         datalog = str(self.timer) + ","\
+                  + str(self.state) + ","\
                   + str(self.gps.Time) + ","\
                   + str(self.gps.Lat) + ","\
                   + str(self.gps.Lon) + ","\
@@ -109,10 +110,9 @@ class Cansat(object):
                   + str(self.dist) + ","\
                   + str(self.rightmotor.velocity) + ","\
                   + str(self.leftmotor.velocity)
-        #+ str(self.state) + ","\
         print(datalog)
-        with open("test.txt",mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
-            test.write(datalog + '\n')
+        #with open("test.txt",mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
+            #test.write(datalog + '\n')
           
     def sendRadio(self):
         datalog = str(self.state) + ","\
