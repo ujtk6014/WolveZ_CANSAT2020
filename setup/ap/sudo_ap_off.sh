@@ -6,8 +6,8 @@ cd create_ap
 
 #AP化のファイル削除(下2つはap_onでファイル編集したとき使用)
 sudo sh -c "rm -rf /etc/create_ap.conf"
-#sudo sh -c "rm -rf /etc/network/interfaces"
-#sudo sh -c "rm -rf /etc/default/hostapd"
+sudo sh -c "rm -rf /etc/network/interfaces"
+sudo sh -c "rm -rf /etc/default/hostapd"
 
 #stop, disable
 sudo systemctl stop create_ap
