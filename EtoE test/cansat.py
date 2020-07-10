@@ -111,8 +111,8 @@ class Cansat(object):
                   + str(self.rightmotor.velocity) + ","\
                   + str(self.leftmotor.velocity)
         print(datalog)
-        #with open("test.txt",mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
-            #test.write(datalog + '\n')
+        with open("test.txt",mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
+            test.write(datalog + '\n')
           
     def sendRadio(self):
         datalog = str(self.state) + ","\
@@ -205,21 +205,24 @@ class Cansat(object):
             
         if not self.landingTime == 0:
             if self.landstate == 0:
-                GPIO.output(self.RELEASING_PIN,HIGH) #電圧をHIGHにして焼き切りを行う
+                GPIO.output(ct.const.RELEASING_PIN,1) #電圧をHIGHにして焼き切りを行う
                 if time.time()-self.landingTime > ct.const.RELEASING_TIME_THRE:
-                    GPIO.output(ct.const.RELEASING_PIN,LOW) #焼き切りが危ないのでlowにしておく
+                    GPIO.output(ct.const.RELEASING_PIN,0) #焼き切りが危ないのでlowにしておく
+                    self.pre_motorTime = time.time()
                     self.landstate = 1
         
             #焼き切りが終わったあと一定時間モータを回して分離シートから脱出
             elif self.landstate == 1:
-                self.pre_motorTime = time.time()
                 self.rightmotor.go(100)
                 self.leftmotor.go(100)
+                
                 if time.time()-self.pre_motorTime > ct.const.PRE_MOTOR_TIME_THRE:
                     self.rightmotor.stop()
                     self.leftmotor.stop()
                     self.state = 4
                     self.laststate = 4
+                else:
+                    pass
                 
     def waiting(self):
         if self.waitingTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
