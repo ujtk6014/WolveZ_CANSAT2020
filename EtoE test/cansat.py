@@ -2,7 +2,7 @@
 Keio Wolve'Z cansat2020
 mission function
 Author Yuji Tanaka
-last update:2020/07/08
+last update:2020/07/18
 """
 
 #ライブラリの読み込み
@@ -47,6 +47,7 @@ class Cansat(object):
         self.state = 0
         self.laststate = 0
         self.following=0 # state1の中で、カメラによる検知中か追従中かを区別、どちらもカメラを回しながら行いたいため
+        self.landstate =0
         
         #stateに入っている時刻の初期化
         self.preparingTime = 0
@@ -87,7 +88,7 @@ class Cansat(object):
         self.bno055.bnoread()
         self.ultrasonic.getDistance()
         self.writeData()#txtファイルへのログの保存
-        if not self.state == 1 and not self.state == 2: #preparingとflyingのときは電波を発しない
+        if not self.state == 1: #preparingのときは電波を発しない
             self.sendRadio()#LoRaでログを送信
     
     def writeData(self):
