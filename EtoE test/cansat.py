@@ -41,6 +41,7 @@ class Cansat(object):
         self.startTime = time.time()
         self.timer = 0
         self.timestep=0#写真撮影用
+        self.landstate = 0 #landing statenの中でモータを一定時間回すためにlandのなかでもステート管理するため
         
         #変数
         self.state = 0
@@ -52,6 +53,7 @@ class Cansat(object):
         self.flyingTime = 0
         self.droppingTime = 0
         self.landingTime = 0
+        self.pre_motorTime = 0
         self.waitingTime = 0
         self.runningTime = 0
         self.goalTime = 0
@@ -162,13 +164,6 @@ class Cansat(object):
             self.rightmotor.stop()
             self.leftmotor.stop()
         
-        #フライトピンがない場合は以下のように時間でステート移行させる
-        if not self.flyingTime == 0:
-            if time.time() - self.flyingTime > ct.const.FLYING_TIME_THRE:
-                self.state = 2
-                self.laststate = 2
-        """
-        #フライトピンを使用するときはコメントを外して以下のコードを使用
         if GPIO.input(ct.const.FLIGHTPIN_PIN) == GPIO.HIGH:#highかどうか＝フライトピンが外れているかチェック
             self.countFlyLoop+=1
             if self.countFlyLoop > ct.const.COUNT_FLIGHTPIN_THRE:#一定時間HIGHだったらステート移行
@@ -176,7 +171,7 @@ class Cansat(object):
                 self.laststate = 2
         else:
             self.countFlyLoop = 0 #何故かLOWだったときカウントをリセット
-        """     
+            
     def dropping(self):
         if self.droppingTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
             self.droppingTime = time.time()
@@ -207,15 +202,24 @@ class Cansat(object):
             self.BLUE_LED.led_on()
             self.GREEN_LED.led_off()
             
-        GPIO.output(ct.const.RELEASING_PIN,1)
-        
-        #時間でステート移行させる
         if not self.landingTime == 0:
-            if time.time()-self.landingTime > ct.const.RELEASING_TIME_THRE:
-                GPIO.output(ct.const.RELEASING_PIN,0) #焼き切りが危ないのでlowにしておく
-                self.state = 4
-                self.laststate = 4
-            
+            if self.landstate == 0:
+                GPIO.output(self.RELEASING_PIN,HIGH) #電圧をHIGHにして焼き切りを行う
+                if time.time()-self.landingTime > ct.const.RELEASING_TIME_THRE:
+                    GPIO.output(ct.const.RELEASING_PIN,LOW) #焼き切りが危ないのでlowにしておく
+                    self.landstate = 1
+        
+            #焼き切りが終わったあと一定時間モータを回して分離シートから脱出
+            elif self.landstate == 1:
+                self.pre_motorTime = time.time()
+                self.rightmotor.go(100)
+                self.leftmotor.go(100)
+                if time.time()-self.pre_motorTime > ct.const.PRE_MOTOR_TIME_THRE:
+                    self.rightmotor.stop()
+                    self.leftmotor.stop()
+                    self.state = 4
+                    self.laststate = 4
+                
     def waiting(self):
         if self.waitingTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
             GPIO.output(ct.const.RELEASING_PIN,0) #焼き切りしっぱなしでは怖いので保険
@@ -278,21 +282,32 @@ class Cansat(object):
                         self.countAreaLoopStart=0
             else:
                 self.countAreaLoopStart=0
-            
             #モーターへの指示を行う
             if self.following==1:
                 #print('モーターへの指示')
                 if self.camera.direct==0:
-                    print('right motor:', 100)
-                    print('left motor:', 100)
+                    if self.dist < ct.const.DISTANCE_THRE_END:
+                        self.rightmotor.stop()
+                        self.leftmotor.stop()
+                    else:
+                        self.rightmotor.go(100)
+                        self.leftmotor.go(100)
+                        
                 if self.camera.direct==1:
-                    print('right motor:', round(100*(1-self.camera.angle/180)))
-                    print('left motor:', 100)
+                    if self.dist < ct.const.DISTANCE_THRE_END:
+                        self.rightmotor.stop()
+                        self.leftmotor.stop()
+                    else:
+                        self.rightmotor.go(round(100*(1-self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
+                        self.leftmotor.go(100)
+                        
                 if self.camera.direct==-1:
-                    print('right motor:', 100)
-                    print('left motor:', round(100*(1-self.camera.angle/180)))
-                #ここにモーターへの指示内容をかく！
-            
+                    if self.dist < ct.const.DISTANCE_THRE_END:
+                        self.rightmotor.stop()
+                        self.leftmotor.stop()
+                    else:
+                        self.rightmotor.go(100)
+                        self.leftmotor.go(round(100*(1-self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
             #見失い判定
             if self.following==1 and self.camera.area<ct.const.AREA_THRE_LOSE:
                 self.countAreaLoopLose+=1

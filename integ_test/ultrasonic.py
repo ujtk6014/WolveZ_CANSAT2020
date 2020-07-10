@@ -38,10 +38,7 @@ class Ultrasonic(object):
             if GPIO.input(ct.const.ULTRASONIC_ECHO) == GPIO.LOW:
                 signalon = time.time()
                 break
-
-        # GPIO を初期化しておく
-        GPIO.cleanup()
-
+            
         # 時刻の差から、物体までの往復の時間を求め、距離を計算する
         timepassed = signalon - signaloff
         distance = timepassed * 17000
