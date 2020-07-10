@@ -259,10 +259,6 @@ class Cansat(object):
         # frame=cv2.resize(frame, (640,480)) # プレビューサイズ（いじらなくてよい）
         rects = self.camera.find_rect_of_target_color(frame) # 矩形の情報作成
         
-        # 一定間隔で状況を撮影
-        if self.timestep%200==0:
-            imName=str(self.timestep)+'image.jpg'
-            cv2.imwrite(imName,frame)
         
         if len(rects) > 0:
             rect = max(rects, key=(lambda x: x[2] * x[3]))  # 最大の矩形を探索
@@ -348,6 +344,12 @@ class Cansat(object):
             
             cv2.rectangle(frame, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) # フレームを生成
         cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
+        
+        # 一定間隔で状況を撮影
+        if self.timestep%20==0:
+            imName=str(self.timestep)+'image.jpg'
+            cv2.imwrite(imName,frame)
+            
         cv2.imshow('red', frame)
         cv2.waitKey(1)
         
