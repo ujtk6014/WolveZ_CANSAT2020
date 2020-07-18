@@ -19,7 +19,7 @@ class motor():
 #正転
     def go(self,v):
         if v>100:
-            v=0
+            v=100
         if v<0:
             v=0 #vに辺な値があった時の処理のための4行,backのも同じ
         self.velocity=v #vは0から100のDuty比、速度を表す指標として利用、後々stopslowlyで使用
@@ -30,7 +30,7 @@ class motor():
 #逆転        
     def back(self,v):
         if v>100:
-            v=0
+            v=100
         if v<0:
             v=0
         self.velocity=-v
@@ -58,7 +58,7 @@ class motor():
         GPIO.output(self.pin1,0)
         GPIO.output(self.pin2,0)
         
-#ブレーキ（何であるんだろう？）
+#ブレーキ:タイヤをロック
     def brake(self):
         self.velocity=0
         self.pwm.ChangeDutyCycle(0)
