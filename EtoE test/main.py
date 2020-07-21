@@ -1,6 +1,7 @@
 import cansat
 import cv2
 from time import sleep
+import RPi.GPIO as GPIO
 
 can=cansat.Cansat()
 can.setup()
@@ -10,9 +11,10 @@ try:
     #while cv2.waitKey(1) < 0:
     while True:
         can.sensor()
-        sleep(0.001)
+        sleep(0.1)
         can.sequence()
-        sleep(0.001)
+        sleep(0.1)
 except KeyboardInterrupt:
     print('finished')
+    GPIO.cleanup()
     pass

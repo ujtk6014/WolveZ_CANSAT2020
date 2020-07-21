@@ -3,7 +3,8 @@ import constant as ct
 import led_class
 import sys
 import datetime
-global start_time
+import ultrasonic
+
 
 class simpleFunc():
     
@@ -12,6 +13,7 @@ class simpleFunc():
         self.LED_Pre = led_class.led(ct.const.RED_LED_PIN)
         self.LED_Fly = led_class.led(ct.const.BLUE_LED_PIN)
         self.LED_G = led_class.led(ct.const.GREEN_LED_PIN)
+        self.ultrasonic = ultrasonic.Ultrasonic()
         self.state = 0
         self.preparingTime = 0
         self.flyingTime = 0
@@ -21,6 +23,7 @@ class simpleFunc():
     def sensor(self): #センサーの値の読み取り
         #データの読み込み
         #gps.readgps()など
+        self.ultrasonic.getDistance()
         self.writeData()
         #if not self.state == 2:
         #    sendRadio()
@@ -28,6 +31,8 @@ class simpleFunc():
     def writeData(self): #txtファイルへの書き込み
         timer = 1000*(time.time() - self.startTime) #経過時間 (ms)
         timer = int(timer)
+        self.dist=round(self.ultrasonic.dist,2)
+        print(self.dist)
         """
         dt_now = str(datetime.datetime.now()) #現在の日付の取得
         dt_now = dt_now[0:19] #いらないところを切り取る
@@ -44,8 +49,8 @@ class simpleFunc():
                test.write(datalog + '\n')
         except FileExistsError: #ファイルが存在する場合は追記する
         """
-        with open("test.txt",mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
-            test.write(datalog + '\n')
+        #with open("test.txt",mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
+        #    test.write(datalog + '\n')
           
     def sequence(self):
         if self.state == 0:#初期化の必要あり←initで初期化

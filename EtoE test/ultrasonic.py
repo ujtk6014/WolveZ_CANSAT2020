@@ -2,18 +2,12 @@
 # -*- coding: utf-8 -*-
 import time
 import constant as ct
+import RPi.GPIO as GPIO
 
 class Ultrasonic(object):
   
     def __init__(self):
         self.dist=0.0
-    
-    # 距離を読む関数
-    def getDistance(self):
-        
-        # 必要なライブラリのインポート・設定
-        import RPi.GPIO as GPIO
-
         # 使用するピンの設定
         GPIO.setmode(GPIO.BCM)
 
@@ -21,7 +15,9 @@ class Ultrasonic(object):
         GPIO.setup(ct.const.ULTRASONIC_TRIG,GPIO.OUT)
         GPIO.setup(ct.const.ULTRASONIC_ECHO,GPIO.IN)
         GPIO.output(ct.const.ULTRASONIC_TRIG, GPIO.LOW)
-        
+            
+    # 距離を読む関数
+    def getDistance(self):
         # TRIG に短いパルスを送る
         GPIO.output(ct.const.ULTRASONIC_TRIG, GPIO.HIGH)
         time.sleep(0.00001)
@@ -40,7 +36,7 @@ class Ultrasonic(object):
                 break
 
         # GPIO を初期化しておく
-        GPIO.cleanup()
+        #GPIO.cleanup()
 
         # 時刻の差から、物体までの往復の時間を求め、距離を計算する
         timepassed = signalon - signaloff

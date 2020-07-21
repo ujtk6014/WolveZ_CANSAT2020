@@ -2,12 +2,14 @@
 Keio Wolve'Z cansat2020
 mission function
 Author Yuji Tanaka
-date:2020/05/26
+last update:2020/07/18
 """
 #ライブラリの読み込み
 import time
 import RPi.GPIO as GPIO
 import sys
+import numpy
+import cv2
 
 #クラス読み込み
 import constant as ct
@@ -25,7 +27,7 @@ class Cansat(object):
         #オブジェクトの生成
         self.rightmotor = motor.motor(ct.const.RIGHT_MOTOR_VREF_PIN,ct.const.RIGHT_MOTOR_IN1_PIN,ct.const.RIGHT_MOTOR_IN2_PIN)
         self.leftmotor = motor.motor(ct.const.LEFT_MOTOR_VREF_PIN,ct.const.LEFT_MOTOR_IN1_PIN,ct.const.LEFT_MOTOR_IN2_PIN)
-        self.gps = gps.GPS()
+        self.gps = gps.Gps()
         self.bno055 = bno055.BNO055()
         self.radio = radio.radio()
         self.ultrasonic = ultrasonic.Ultrasonic()
@@ -42,13 +44,15 @@ class Cansat(object):
         #変数
         self.state = 0
         self.laststate = 0
-        self.following=0 # state1の中で、カメラによる検知中か追従中かを区別、どちらもカメラを回しながら行いたいため
+        self.following= 0 # state1の中で、カメラによる検知中か追従中かを区別、どちらもカメラを回しながら行いたいため
+        self.landstate = 0 #landing statenの中でモータを一定時間回すためにlandのなかでもステート管理するため
         
         #stateに入っている時刻の初期化
         self.preparingTime = 0
         self.flyingTime = 0
         self.droppingTime = 0
         self.landingTime = 0
+        self.pre_motorTime = 0
         self.waitingTime = 0
         self.runningTime = 0
         self.goalTime = 0
@@ -67,38 +71,34 @@ class Cansat(object):
         #GIOP設定
         GPIO.setmode(GPIO.BCM) #GPIOの設定
         GPIO.setup(ct.const.FLIGHTPIN_PIN,GPIO.IN) #フライトピン用
-        GPIO.setup(ct.const.BURNING_PIN,GPIO.OUT) #焼き切り用のピンの設定
+        GPIO.setup(ct.const.RELEASING_PIN,GPIO.OUT) #焼き切り用のピンの設定
     
     def setup(self):
-        gps.setupGps()
-        bno055.setupBno()
-        radio.setupRadio()
-        ultrasonic.setupUltrasonic()
+        self.gps.setupGps()
+        self.bno055.setupBno()
+        self.radio.setupRadio()
         
     def sensor(self):
         self.gps.gpsread()
         self.bno055.bnoread()
         self.ultrasonic.getDistance()
         self.writeData()#txtファイルへのログの保存
-        if not self.state == 1 and not self.state == 2: #preparingとflyingのときは電波を発しない
+        if not self.state == 1: #droppingのときは電波を発しない
             self.sendRadio()#LoRaでログを送信
     
     def writeData(self):
         self.timer = 1000*(time.time() - self.startTime) #経過時間 (ms)
-        self.timer = int(timer)
+        self.timer = int(self.timer)
         #ログデータ作成。\マークを入れることで改行してもコードを続けて書くことができる
         datalog = str(self.timer) + ","\
                   + str(self.state) + ","\
                   + str(self.gps.Time) + ","\
                   + str(self.gps.Lat) + ","\
                   + str(self.gps.Lon) + ","\
-                  + str(self.bno055.gx) + ","\
-                  + str(self.bno055.gy) + ","\
-                  + str(self.bno055.gz) + ","\
                   + str(self.bno055.Ax) + ","\
                   + str(self.bno055.Ay) + ","\
                   + str(self.bno055.Az) + ","\
-                  + str(self.ultrasonic.distance) + ","\
+                  + str(self.ultrasonic.dist) + ","\
                   + str(self.rightmotor.velocity) + ","\
                   + str(self.leftmotor.velocity)
         
@@ -111,10 +111,10 @@ class Cansat(object):
                   + str(self.gps.Time) + ","\
                   + str(self.gps.Lat) + ","\
                   + str(self.gps.Lon) + ","\
-                  + str(self.bno055.gx) + ","\
-                  + str(self.bno055.gy) + ","\
-                  + str(self.bno055.gz) + ","\
-                  + str(self.ultrasonic.distance) + ","\
+                  + str(self.bno055.Ax) + ","\
+                  + str(self.bno055.Ay) + ","\
+                  + str(self.bno055.Az) + ","\
+                  + str(self.ultrasonic.dist) + ","\
                   + str(self.rightmotor.velocity) + ","\
                   + str(self.leftmotor.velocity)
         self.radio.sendData(datalog) #データを送信
@@ -176,13 +176,13 @@ class Cansat(object):
             self.BLUE_LED.led_on()
             self.GREEN_LED.led_off()
             
-        if (pow(bno055.Ax,2) + pow(bno055.Ay,2) + pow(bno055.Az,2)) < pow(self.ACC_THRE,2):#加速度が閾値以下で着地判定
+        if (pow(self.bno055.Ax,2) + pow(self.bno055.Ay,2) + pow(self.bno055.Az,2)) < pow(ct.const.ACC_THRE,2):#加速度が閾値以下で着地判定
             self.countDropLoop+=1
             if self.countDropLoop > ct.const.COUNT_ACC_LOOP_THRE:
                 self.state = 3
                 self.laststate = 3
         else:
-            self.countDropLoop = 0 #初期化の必要あり
+            self.countDropLoop = 0 #加速度がしきい値を超えてしまった場合は再びカウントをリセット
         """
         #時間で着地判定
         if not self.droppingTime == 0:
@@ -198,14 +198,24 @@ class Cansat(object):
             self.BLUE_LED.led_off()
             self.GREEN_LED.led_on()
             
-        GPIO.output(self.RELEASING_PIN,HIGH)
-        
         if not self.landingTime == 0:
-            if time.time()-self.landingTime > ct.const.RELEASING_TIME_THRE:
-                GPIO.output(ct.const.RELEASING_PIN,LOW) #焼き切りが危ないのでlowにしておく
-                self.state = 4
-                self.laststate = 4
-            
+            if self.landstate == 0:
+                GPIO.output(self.RELEASING_PIN,HIGH) #電圧をHIGHにして焼き切りを行う
+                if time.time()-self.landingTime > ct.const.RELEASING_TIME_THRE:
+                    GPIO.output(ct.const.RELEASING_PIN,LOW) #焼き切りが危ないのでlowにしておく
+                    self.landstate = 1
+        
+            #焼き切りが終わったあと一定時間モータを回して分離シートから脱出
+            elif self.landstate == 1:
+                self.pre_motorTime = time.time()
+                self.rightmotor.go(100)
+                self.leftmotor.go(100)
+                if time.time()-self.pre_motorTime > ct.const.PRE_MOTOR_TIME_THRE:
+                    self.rightmotor.stop()
+                    self.leftmotor.stop()
+                    self.state = 4
+                    self.laststate = 4
+                
     def waiting(self):
         if self.waitingTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
             GPIO.output(ct.const.RELEASING_PIN,LOW) #焼き切りしっぱなしでは怖いので保険
@@ -273,16 +283,28 @@ class Cansat(object):
             if self.following==1:
                 #print('モーターへの指示')
                 if self.camera.direct==0:
-                    print('right motor:', 100)
-                    print('left motor:', 100)
+                    if self.dist < ct.const.DISTANCE_THRE_END:
+                        self.rightmotor.stop()
+                        self.leftmotor.stop()
+                    else:
+                        self.rightmotor.go(100)
+                        self.leftmotor.go(100)
+                        
                 if self.camera.direct==1:
-                    print('right motor:', round(100*(1-self.camera.angle/180)))
-                    print('left motor:', 100)
+                    if self.dist < ct.const.DISTANCE_THRE_END:
+                        self.rightmotor.stop()
+                        self.leftmotor.stop()
+                    else:
+                        self.rightmotor.go(round(100*(1-self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
+                        self.leftmotor.go(100)
+                        
                 if self.camera.direct==-1:
-                    print('right motor:', 100)
-                    print('left motor:', round(100*(1-self.camera.angle/180)))
-                #ここにモーターへの指示内容をかく！
-            
+                    if self.dist < ct.const.DISTANCE_THRE_END:
+                        self.rightmotor.stop()
+                        self.leftmotor.stop()
+                    else:
+                        self.rightmotor.go(100)
+                        self.leftmotor.go(round(100*(1-self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
             #見失い判定
             if self.following==1 and self.camera.area<ct.const.AREA_THRE_LOSE:
                 self.countAreaLoopLose+=1
@@ -297,8 +319,7 @@ class Cansat(object):
                 self.countAreaLoopLose=0
           
             #超音波センサを用いた終了判定
-            self.ultrasonic.getDistance()
-            if self.following==1 and self.ultrasonic.dist<ct.const.DISTANCE_THRE_END:
+            if self.following==1 and self.ultrasonic.dist < ct.const.DISTANCE_THRE_END:
                 self.countDistanceLoopEnd+=1
                 if self.countDistanceLoopEnd>ct.const.COUNT_DISTANCE_LOOP_THRE_END:
                     print("追従終了")
@@ -340,6 +361,8 @@ class Cansat(object):
             self.RED_LED.led_off()
             self.BLUE_LED.led_off()
             self.GREEN_LED.led_off()
+            self.capture.release()
+            cv2.destroyAllWindows()
             
         if self.countGoal < ct.const.COUNT_GOAL_LOOP_THRE:
             self.rightmotor.stopSlowly()
@@ -347,11 +370,7 @@ class Cansat(object):
         else:
             self.rightmotor.stop()
             self.leftmotor.stop()
-        self.countGoal+ = 1
-        
-        if self.goalTime==0:
-            self.capture.release()
-            cv2.destroyAllWindows()
+        self.countGoal+=1
             
         #sys.exit()
             
