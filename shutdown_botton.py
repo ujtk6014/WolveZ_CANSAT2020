@@ -8,7 +8,6 @@ import os
 import constant as ct
 
 GPIO.setmode(GPIO.BCM)
-
 GPIO.setup(ct.const.SHUTDOWN,GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 try:
