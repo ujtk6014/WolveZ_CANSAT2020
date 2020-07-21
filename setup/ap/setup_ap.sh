@@ -27,13 +27,32 @@ sudo systemctl start create_ap
 
 #２．１だけでAP化できなかったら（あとで確認）  （参考→http://norikyu.blogspot.com/p/raspberry-pi3-lan-ap.html）
 
+<<<<<<< HEAD
 #ファイル編集(network/interfaces, /etc/default/hostapd)
 sudo sh -c "echo 'source-directory /etc/network/interfaces.d\nauto lo\niface lo inet loopback\niface eth0 inet manual\nauto wlan0\nallow-hotplug wlan0\niface wlan0 inet static\naddress 192.168.7.1\nnetmask 255.255.255.0'>>/etc/network/interfaces"
 sudo sh -c 'echo "DAEMON_CONF="/etc/hostapd/hostapd.conf""'
+=======
+#ファイル編集(network/interfaces, /etc/hostapd/hostapd.conf, /etc/default/hostapd)
+#wlan0
+#sudo sh -c "echo 'source-directory /etc/network/interfaces.d\nauto lo\niface lo inet loopback\niface eth0 inet manual\nauto wlan0\nallow-hotplug wlan0\niface wlan0 inet static\naddress 192.168.7.1\nnetmask 255.255.255.0'>>/etc/network/interfaces"
+#hostapdのインストール
+#sudo sh -c "echo 'interface=wlan0\ndriver=nl80211\nssid=wolvez2020\nhw_mode=g\nchannel=6\nieee80211n=1\nwmm_enabled=1\nht_capab=[HT40][SHORT-GI-20][DSSS_CCK-40]\nmacaddr_acl=0\nauth_algs=1\nignore_broadcast_ssid=0\nwpa=2\nwpa_key_mgmt=WPA-PSK\nwpa_passphrase=wolvez2020\nrsn_pairwise=CCMP'>>/etc/hostapd/hostapd.conf"
+#sudo sh -c 'echo "DAEMON_CONF="/etc/hostapd/hostapd.conf""'
+
+>>>>>>> 569eb148089b53f2eb81e67d2f5b9cdf92086246
 #dnsmasqのインストール
-sudo apt-get install dnsmasq
+#sudo apt-get install dnsmasq
 #オリジナル設定ファイルのバックアプ
+<<<<<<< HEAD
 sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
 
 #reboot 
 echo -e "<<設定完了のおしらせ>>\nお疲れ様です！AP化初期設定完了！ 再起動お願いします！"
+=======
+#sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
+#ファイル編集(/etc/dnsmasq.conf)
+#sudo sh -c "echo 'interface=wlan0\nlisten-address=192.168.7.1\nbind-interfaces\nserver=8.8.8.8\nserver=8.8.4.4\ndomain-needed\nbogus-priv\ndhcp-range=192.168.7.100,192.168.7.199,24h'>>/etc/dnsmasq.conf"
+
+#reboot 
+sudo reboot
+>>>>>>> 569eb148089b53f2eb81e67d2f5b9cdf92086246

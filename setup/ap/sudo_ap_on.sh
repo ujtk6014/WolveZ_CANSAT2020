@@ -17,6 +17,7 @@ sudo sh -c "echo 'CHANNEL=default\nGATEWAY=10.0.0.1\nWPA_VERSION=2\nETC_HOSTS=0\
 
 #↓のコメント外すとAP化されたRPiの無線だけが使用できるようになる
 #AP化するために必要なファイル編集(2つ)
+<<<<<<< HEAD
 """
 cat > /etc/network/interfaces <<EOF
 
@@ -39,6 +40,10 @@ DAEMON_CONF=
 
 EOF
 """
+=======
+sudo sh -c "echo 'source-directory /etc/network/interfaces.d\nauto lo\niface lo inet loopback\niface eth0 inet manual\nauto wlan0\nallow-hotplug wlan0\niface wlan0 inet static\naddress 192.168.7.1\nnetmask 255.255.255.0'>>/etc/network/interfaces"
+sudo sh -c 'echo "DAEMON_CONF="/etc/hostapd/hostapd.conf""'
+>>>>>>> 569eb148089b53f2eb81e67d2f5b9cdf92086246
 
 
 #enable, start
@@ -51,5 +56,9 @@ sudo systemctl start  hostapd
 sudo systemctl enable  dnsmasq
 sudo systemctl start  dnsmasq
 
+<<<<<<< HEAD
 #sudo reboot
 echo -e "<<設定完了のおしらせ>>\nおめでとう！設定完了だ！ 再起動お願いします！"
+=======
+sudo reboot
+>>>>>>> 569eb148089b53f2eb81e67d2f5b9cdf92086246

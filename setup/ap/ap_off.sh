@@ -20,5 +20,9 @@ sudo systemctl disable  hostapd
 sudo systemctl stop  dnsmasq
 sudo systemctl disable  dnsmasq
 
+<<<<<<< HEAD:setup/ap/ap_off.sh
 #sudo reboot AP化オフにするときはrebootまでしないとvnc接続でrebootできなくなっちゃう
 sudo reboot
+=======
+sudo reboot
+>>>>>>> 569eb148089b53f2eb81e67d2f5b9cdf92086246:setup/ap/sudo_ap_off.sh
