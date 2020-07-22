@@ -11,6 +11,7 @@ import RPi.GPIO as GPIO
 import sys
 import cv2
 import numpy as np
+import datetime
 
 #クラス読み込み
 import constant as ct
@@ -74,6 +75,9 @@ class Cansat(object):
         GPIO.setmode(GPIO.BCM) #GPIOの設定
         GPIO.setup(ct.const.FLIGHTPIN_PIN,GPIO.IN) #フライトピン用
         GPIO.setup(ct.const.RELEASING_PIN,GPIO.OUT) #焼き切り用のピンの設定
+        
+        date = datetime.datetime.now()
+        self.filename = '{0:%Y%m%d}'.format(date)
     
     def setup(self):
         self.gps.setupGps()
@@ -111,7 +115,7 @@ class Cansat(object):
                   + str(self.rightmotor.velocity) + ","\
                   + str(self.leftmotor.velocity)
         print(datalog)
-        #with open("test.txt",mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
+        #with open('/home/pi/WolveZ_CANSAT2020/EtoEtest/TestResult/%s.txt' % self.filename,mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
             #test.write(datalog + '\n')
           
     def sendRadio(self):
