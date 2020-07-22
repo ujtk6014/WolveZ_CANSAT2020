@@ -27,8 +27,8 @@ class Cansat(object):
     
     def __init__(self):
         #オブジェクトの生成
-        self.rightmotor = motor.motor(ct.const.RIGHT_MOTOR_VREF_PIN,ct.const.RIGHT_MOTOR_IN1_PIN,ct.const.RIGHT_MOTOR_IN2_PIN)
-        self.leftmotor = motor.motor(ct.const.LEFT_MOTOR_VREF_PIN,ct.const.LEFT_MOTOR_IN1_PIN,ct.const.LEFT_MOTOR_IN2_PIN)
+        self.rightmotor = motor.motor(ct.const.RIGHT_MOTOR_IN1_PIN,ct.const.RIGHT_MOTOR_IN2_PIN,ct.const.RIGHT_MOTOR_VREF_PIN)
+        self.leftmotor = motor.motor(ct.const.LEFT_MOTOR_IN1_PIN,ct.const.LEFT_MOTOR_IN2_PIN,ct.const.LEFT_MOTOR_VREF_PIN)
         self.gps = gps.GPS()
         self.bno055 = bno055.BNO055()
         self.radio = radio.radio()
@@ -45,9 +45,11 @@ class Cansat(object):
         self.landstate = 0 #landing statenの中でモータを一定時間回すためにlandのなかでもステート管理するため
         
         #変数
-        self.state = 0
+        self.state = 5
         self.laststate = 0
         self.following=0 # state1の中で、カメラによる検知中か追従中かを区別、どちらもカメラを回しながら行いたいため
+        self.refollow=0
+        self.refollowstate=0
         self.landstate =0
         
         #stateに入っている時刻の初期化
@@ -235,7 +237,18 @@ class Cansat(object):
             self.RED_LED.led_off()
             self.BLUE_LED.led_on()
             self.GREEN_LED.led_on()
-            
+        
+        if self.refollow==1:
+            self.refollowstate+=1
+            if self.refollowstate<ct.const.REFOLLOW_THRE:
+                self.rightmotor.go(100)
+                self.leftmotor.back(100)
+            else:
+                self.rightmotor.stop()
+                self.leftmotor.stop()
+            if self.refollowstate==40:
+                self.refollowstate=0
+        
         #以下に超音波センサによる動的物体発見プログラム
         if self.ultrasonic.dist<ct.const.DISTANCE_THRE_START:
             self.countDistanceLoopStart+=1
@@ -244,6 +257,9 @@ class Cansat(object):
                 self.state=5
                 self.laststate=5
                 self.countDistanceLoopStart=0
+                self.refollow=0
+                self.rightmotor.stop()
+                self.leftmotor.stop()
         else:
             self.countDistanceLoopStart=0
     
@@ -322,6 +338,9 @@ class Cansat(object):
                     self.following=0
                     print('見失った！')
                     cv2.destroyAllWindows()
+                    self.refollow=1
+                    self.rightmotor.stop()
+                    self.leftmotor.stop()
             else:
                 self.countAreaLoopLose=0
           
@@ -348,12 +367,12 @@ class Cansat(object):
             
             cv2.rectangle(frame, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) # フレームを生成
         cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
-        
+        '''
         # 一定間隔で状況を撮影
         if self.timestep%20==0:
             imName=str(self.timestep)+'image.jpg'
             cv2.imwrite(imName,frame)
-            
+        '''
         cv2.imshow('red', frame)
         cv2.waitKey(1)
         
@@ -367,6 +386,9 @@ class Cansat(object):
                 self.following=0
                 print('見失った2！')
                 cv2.destroyAllWindows()
+                self.refollow=1
+                self.rightmotor.stop()
+                self.leftmotor.stop()
 
     
     def goal(self):
