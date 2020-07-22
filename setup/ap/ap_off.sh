@@ -1,14 +1,14 @@
 #AP化OFF
 #<<実行方法>>
-#bash ap_off.sh
-echo -e "<<注意>>\n自動的に再起動しちゃいます！！！\nまずい場合は【ctrl+Cで中断】してください"
+#sudo bash ap_off.sh
+echo -e "<<注意>>\n自動的に再起動しちゃいます！！！\nまずい場合は急いで【ctrl+Cで中断】してください"
 
 cd create_ap
 
 #AP化のファイル削除(下2つはap_onでファイル編集したとき使用)
-sudo sh -c "rm -rf /etc/create_ap.conf"
-sudo sh -c "rm -rf /etc/network/interfaces"
-sudo sh -c "rm -rf /etc/default/hostapd"
+rm -rf /etc/create_ap.conf
+rm -rf /etc/network/interfaces
+rm -rf /etc/default/hostapd
 
 #stop, disable
 sudo systemctl stop create_ap
@@ -20,9 +20,5 @@ sudo systemctl disable  hostapd
 sudo systemctl stop  dnsmasq
 sudo systemctl disable  dnsmasq
 
-<<<<<<< HEAD:setup/ap/ap_off.sh
 #sudo reboot AP化オフにするときはrebootまでしないとvnc接続でrebootできなくなっちゃう
 sudo reboot
-=======
-sudo reboot
->>>>>>> 569eb148089b53f2eb81e67d2f5b9cdf92086246:setup/ap/sudo_ap_off.sh
