@@ -38,7 +38,7 @@ class Camera(object):
     def find_center_of_gravity(self,data):
         self.cgx=data[0]+data[2]//2  
         self.cgy=data[1]+data[3]//2
-
+    
     def find_direction(self,x_coordinate):
         angle=(x_coordinate-320)*31.1/320
         if angle>10:

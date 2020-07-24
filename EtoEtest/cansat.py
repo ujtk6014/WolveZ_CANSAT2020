@@ -246,7 +246,7 @@ class Cansat(object):
             else:
                 self.rightmotor.stop()
                 self.leftmotor.stop()
-            if self.refollowstate==40:
+            if self.refollowstate > 40:
                 self.refollowstate=0
         
         #以下に超音波センサによる動的物体発見プログラム
@@ -284,7 +284,7 @@ class Cansat(object):
             rect = max(rects, key=(lambda x: x[2] * x[3]))  # 最大の矩形を探索
             
             #各パラメータの計算
-            self.camera.find_center_of_gravity(rect) # 重心の計算
+            self.camera.find_center_of_gravity(rects) # 重心の計算
             self.camera.find_angle(self.camera.cgx) # 角度の計算、絶対値
             self.camera.find_direction(self.camera.cgx) # 進む方向
             self.camera.find_area(rect) # 矩形の面積算出
