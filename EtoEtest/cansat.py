@@ -2,7 +2,7 @@
 Keio Wolve'Z cansat2020
 mission function
 Author Yuji Tanaka
-last update:2020/07/18
+last update:2020/07/24
 """
 
 #ライブラリの読み込み
@@ -284,7 +284,7 @@ class Cansat(object):
             rect = max(rects, key=(lambda x: x[2] * x[3]))  # 最大の矩形を探索
             
             #各パラメータの計算
-            self.camera.find_center_of_gravity(rects) # 重心の計算
+            self.camera.find_center_of_gravity(rect) # 重心の計算
             self.camera.find_angle(self.camera.cgx) # 角度の計算、絶対値
             self.camera.find_direction(self.camera.cgx) # 進む方向
             self.camera.find_area(rect) # 矩形の面積算出
