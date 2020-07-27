@@ -2,7 +2,7 @@
 Keio Wolve'Z cansat2020
 mission function
 Author Yuji Tanaka
-last update:2020/07/24
+last update:2020/07/27
 """
 
 #ライブラリの読み込み
@@ -367,12 +367,12 @@ class Cansat(object):
             
             cv2.rectangle(frame, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) # フレームを生成
         cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
-        '''
+        
         # 一定間隔で状況を撮影
         if self.timestep%20==0:
             imName=str(self.timestep)+'image.jpg'
             cv2.imwrite(imName,frame)
-        '''
+        
         cv2.imshow('red', frame)
         cv2.waitKey(1)
         
