@@ -1,2 +1,2 @@
-EtoEtest/__pycache__/
-Motor/__pycache__/
+*.pyc
+__pycache__/
