@@ -2,7 +2,7 @@
 Keio Wolve'Z cansat2020
 mission function
 Author Yuji Tanaka
-last update:2020/07/29
+last update:2020/08/10
 """
 
 #ライブラリの読み込み
@@ -95,7 +95,8 @@ class Cansat(object):
         self.ultrasonic.getDistance()
         self.writeData()#txtファイルへのログの保存
         if not self.state == 1: #preparingのときは電波を発しない
-            self.sendRadio()#LoRaでログを送信
+            #if self.timer%5==0:
+                self.sendRadio()#LoRaでログを送信
     
     def writeData(self):
         self.timer = 1000*(time.time() - self.startTime) #経過時間 (ms)
@@ -129,7 +130,7 @@ class Cansat(object):
                   + str(self.rightmotor.velocity) + ","\
                   + str(self.leftmotor.velocity)
         self.radio.sendData(datalog) #データを送信
-    
+        
     def sequence(self):
         if self.state == 0:
             self.preparing()
@@ -170,7 +171,7 @@ class Cansat(object):
             self.GREEN_LED.led_off()
             self.rightmotor.stop()
             self.leftmotor.stop()
-        
+
         if GPIO.input(ct.const.FLIGHTPIN_PIN) == GPIO.HIGH:#highかどうか＝フライトピンが外れているかチェック
             self.countFlyLoop+=1
             if self.countFlyLoop > ct.const.COUNT_FLIGHTPIN_THRE:#一定時間HIGHだったらステート移行
@@ -184,7 +185,8 @@ class Cansat(object):
             self.droppingTime = time.time()
             self.RED_LED.led_off()
             self.BLUE_LED.led_off()
-            self.GREEN_LED.led_on()
+            self.GREEN_LED.led_on()         
+            
             
         #加速度が小さくなったら着地判定
         if (pow(self.bno055.Ax,2) + pow(self.bno055.Ay,2) + pow(self.bno055.Az,2)) < pow(ct.const.ACC_THRE,2):#加速度が閾値以下で着地判定
@@ -318,16 +320,16 @@ class Cansat(object):
                         self.rightmotor.stop()
                         self.leftmotor.stop()
                     else:
-                        self.rightmotor.go(round(100*(1-self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
-                        self.leftmotor.go(100)
+                        self.rightmotor.go(100)
+                        self.leftmotor.go(round(100*(1-self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
                         
                 if self.camera.direct==-1:
                     if self.dist < ct.const.DISTANCE_THRE_END:
                         self.rightmotor.stop()
                         self.leftmotor.stop()
                     else:
-                        self.rightmotor.go(100)
-                        self.leftmotor.go(round(100*(1-self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
+                        self.rightmotor.go(round(100*(1-self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
+                        self.leftmotor.go(100)
             #見失い判定
             if self.following==1 and self.camera.area<ct.const.AREA_THRE_LOSE:
                 self.countAreaLoopLose+=1
@@ -367,12 +369,14 @@ class Cansat(object):
             
             cv2.rectangle(frame, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) # フレームを生成
         cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
+        frame=cv2.rotate(frame,cv2.ROTATE_180)
         
-        
+        """
         # 一定間隔で状況を撮影
         if self.timestep%20==0:
             imName='./TestResult/'+self.filename+'_'+str(self.timer)+'image.jpg'
             cv2.imwrite(imName,frame)
+        """
         
         
         cv2.imshow('red', frame)
