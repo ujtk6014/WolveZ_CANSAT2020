@@ -8,10 +8,6 @@ class Ultrasonic(object):
   
     def __init__(self):
         self.dist=0.0
-<<<<<<< HEAD
-
-=======
->>>>>>> master
         # 使用するピンの設定
         GPIO.setmode(GPIO.BCM)
 
@@ -19,16 +15,9 @@ class Ultrasonic(object):
         GPIO.setup(ct.const.ULTRASONIC_TRIG,GPIO.OUT)
         GPIO.setup(ct.const.ULTRASONIC_ECHO,GPIO.IN)
         GPIO.output(ct.const.ULTRASONIC_TRIG, GPIO.LOW)
-<<<<<<< HEAD
-        
+            
     # 距離を読む関数
     def getDistance(self):
-        
-=======
-    
-    # 距離を読む関数
-    def getDistance(self):
->>>>>>> master
         # TRIG に短いパルスを送る
         GPIO.output(ct.const.ULTRASONIC_TRIG, GPIO.HIGH)
         time.sleep(0.00001)
@@ -46,12 +35,9 @@ class Ultrasonic(object):
                 signalon = time.time()
                 break
 
-<<<<<<< HEAD
         # GPIO を初期化しておく
         #GPIO.cleanup()
 
-=======
->>>>>>> master
         # 時刻の差から、物体までの往復の時間を求め、距離を計算する
         timepassed = signalon - signaloff
         distance = timepassed * 17000

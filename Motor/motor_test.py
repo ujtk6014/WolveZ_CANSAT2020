@@ -4,12 +4,17 @@ import time
 
 GPIO.setwarnings(False)
 Motor = motor.motor(5,6,13)
+#Motor = motor.motor(20,21,12)
 
 print("motor run")
 Motor.go(100)
+time.sleep(4)
+"""
+Motor.back(100)
 time.sleep(3)
 print("motor stop")
 Motor.stop()
 time.sleep(3)
+"""
 
 GPIO.cleanup()
