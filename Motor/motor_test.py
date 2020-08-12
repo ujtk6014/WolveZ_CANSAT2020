@@ -1,9 +1,9 @@
-import motor_class
+import motor
 import RPi.GPIO as GPIO
 import time 
 
 GPIO.setwarnings(False)
-Motor = motor_class.motor(22,23,12)
+Motor = motor.motor(5,6,13)
 
 print("motor run")
 Motor.go(100)
