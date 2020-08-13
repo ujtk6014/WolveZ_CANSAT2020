@@ -56,17 +56,17 @@ git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
   import cv2
   ```
 
-1. GPS Setup
+2. GPS Setup
   ```
   bash setup_gps.sh
   ```
 
-1. I2C Setup
+3. I2C Setup
   ```
   bash setup_i2c.sh
   ```
 
-1. Access Point Setup (Additional)
+4. Access Point Setup (Additional)
   if you want to use Raspberry Pi remotely in **No Wi-fi** environment, you may want to use your Rasberry Pi as Wi-fi access point. Then go to `setup/ap` and run `setup_ap.sh`
   ```
   sudo bash setup_ap.sh
@@ -74,7 +74,7 @@ git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
   Once you activate access point, you cannot connect your Raspberry Pi to other Wi-fi network. So you can turn it off by
   ```
   sudo bash ap_off.sh
-  ``
+  ```
   If you want to re-activate, then
   ```
   sudo bash ap_on.sh
