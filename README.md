@@ -13,9 +13,12 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 
 
 ## Table of Contents
+- [Our Mission](#Our-Mission)
 - [Requirements](#Requirements)
 - [Usage](#usage)
-- [Member](#Member)
+- [Project Member](#Project-Member)
+
+## Our Mission
 
 ## Requirements
 - Microcomputer
@@ -36,7 +39,7 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 ### Algorithm
 comming soon... 
 
-## Member
+## Project Member
 - Project manager: 
   Yuki Ko
 - Software: 
