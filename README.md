@@ -1,4 +1,4 @@
-# WolveZ CANSAT2020
+# Wolve'Z CANSAT2020
 Mission code in Python for Keio Wolve'Z CaSat project 2020
 
 ## Description: About our CanSat
@@ -9,7 +9,7 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 
 ## Table of Contents
 - [Hardware](#Hardware)
-- [Algorithm](#Algorithm)
+- [Usage](#usage)
 - [Member](#Member)
 
 ## Hardware
@@ -30,17 +30,11 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 - Motor driver
   - TA7291P
 
-## Algorithm
+## Usage
+
+Algorithm
+-----------
 comming soon... 
-
-
-
-
-
-
-
-
-
 
 ## Member
 - Project manager: 
