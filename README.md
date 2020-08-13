@@ -8,11 +8,11 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
   We are assuming a rover which has LRF and optimal camera. Autonomous tracking is accomplished by the combination of image processing and distance and direction recognition by LRF. Considerring the CanSat regulation, we are making a rover which has ultrasonic sensor and camera in order to realize autonomous tracking.
 
 ## Table of Contents
-- [Hardware](#Hardware)
+- [Requirements](#Requirements)
 - [Usage](#usage)
 - [Member](#Member)
 
-## Hardware
+## Requirements
 - Microcomputer
   - Raspberry Pi 3B+
 - Camera
@@ -31,9 +31,7 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
   - TA7291P
 
 ## Usage
-
-Algorithm
------------
+###Algorithm
 comming soon... 
 
 ## Member
