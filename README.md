@@ -14,13 +14,16 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 
 ## Table of Contents
 - [Our Mission](#Our-Mission)
+  - [Human Following Robot](#Human-Following-Robot)
+  - [Mission Sequence](#Mission-Sequence)
+  - [Image Processing](#Image-Processing)
 - [Hardware Requirements](#Hardware-Requirements)
 - [Software Requirements](#Software-Requirements)
 - [Usage](#usage)
 - [Project Member](#Project-Member)
 
 ## Our Mission
-### Human following robot
+### Human Following Robot
 ### Mission Sequence
 ### Image Processing
 
