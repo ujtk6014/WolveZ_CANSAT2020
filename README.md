@@ -41,7 +41,7 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 
 ## Sofrware Requirements
 Firstly, you need to clone this repository
-```Bash
+```Python:python.py
 git clone 
 ```
 1. OpenCV
