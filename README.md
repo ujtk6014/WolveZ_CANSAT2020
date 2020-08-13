@@ -44,8 +44,7 @@ Firstly, you need to clone this repository
 ```
 git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
 ```
-### Softwar preparation
-
+### Setups
 1. OpenCV  
   go to `setup` folder and run `inst_opencv.sh` to install opencv
   ```
@@ -67,7 +66,6 @@ git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
   ```
 
 4. Access Point Setup (Additional)  
-<br>
   if you want to use Raspberry Pi remotely in **No Wi-fi** environment, you may want to use your Rasberry Pi as Wi-fi access point. Then go to `setup/ap` and run `setup_ap.sh`
   ```
   sudo bash setup_ap.sh
