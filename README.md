@@ -41,8 +41,9 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 
 ## Sofrware Requirements
 Firstly, you need to clone this repository
-```Python:python.py
-git clone 
+```Python
+import cv2
+git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
 ```
 1. OpenCV
   
