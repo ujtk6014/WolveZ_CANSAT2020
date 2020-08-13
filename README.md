@@ -19,23 +19,9 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 ## Requirements
 - Microcomputer
   - Raspberry Pi 3B+
-- Camera
-  - Raspberry Pi Camera Module V2
-- Ultrasonic sensor
-  - HC-SR04
-- Communication Mosule
-  - ES920LR
-- GPS
-  - GYSFDMAXB
-- Accelaration Sensor
-  - BNO055
-- Motor
-  - coming soon...
-- Motor driver
-  - TA7291P
 - Sensors
     
-    |Sensor|Product|
+    |**Sensor**|**Products**|
     |:---|:---:|
     |Camera|Raspberry Pi Camera Module V2|
     |Ultrasonic sensor|HC-SR04|
