@@ -23,7 +23,7 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
     
     |**Sensor**|**Products**|**image**|
     |:---|:---:|:---:|
-    |Camera|Raspberry Pi Camera Module V2|<img src="https://user-images.githubusercontent.com/57528969/90113840-dfe97380-dd8c-11ea-8b1c-cac55b4aa5ee.png">|
+    |Camera|Raspberry Pi Camera Module V2|<img src="https://user-images.githubusercontent.com/57528969/90113840-dfe97380-dd8c-11ea-8b1c-cac55b4aa5ee.png" width="20%">|
     |Ultrasonic sensor|HC-SR04||
     |Communication Module|ES920LR||
     |GPS module|GYSFDMAXB||
