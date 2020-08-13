@@ -1,5 +1,5 @@
 # WolveZ CANSAT2020
-Mission codein Python for Keio Wolve'Z CaSat project 2020
+Mission code in Python for Keio Wolve'Z CaSat project 2020
 
 ## Description: About our CanSat
   CanSat is a small satellite sized approximately as small as soda can.
@@ -29,6 +29,18 @@ Mission codein Python for Keio Wolve'Z CaSat project 2020
   - coming soon...
 - Motor driver
   - TA7291P
+
+## Algorithm
+comming soon... 
+
+
+
+
+
+
+
+
+
 
 ## Project Member
 - Project manager: 
