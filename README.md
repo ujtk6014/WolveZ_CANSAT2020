@@ -19,6 +19,9 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 - [Project Member](#Project-Member)
 
 ## Our Mission
+### Human following robot
+### Mission Sequence
+### Image Processing
 
 ## Requirements
 - Microcomputer
