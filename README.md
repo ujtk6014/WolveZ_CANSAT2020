@@ -11,8 +11,6 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 <img src="https://user-images.githubusercontent.com/57528969/90110593-6fd8ee80-dd88-11ea-88c2-6b1f03e266d6.png" width="45%" title="Our CanSat">
 </div>
 
-|:---:|:---:|
-|<img src="https://user-images.githubusercontent.com/57528969/90110593-6fd8ee80-dd88-11ea-88c2-6b1f03e266d6.png" width="20%">|<img src="https://user-images.githubusercontent.com/57528969/90114869-4ae77a00-dd8e-11ea-8e98-16335effae26.png" width="20%">|
 
 ## Table of Contents
 - [Requirements](#Requirements)
