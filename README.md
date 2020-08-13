@@ -34,14 +34,15 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 - Motor driver
   - TA7291P
 - Sensors
-    |Sensor|ProductNumber|
+    
+    |Sensor|Product|
     |:---|:---:|
-    |Camera|RaspberryPiCameraModuleV2|
-    |Ultrasonicsensor|HC-SR04|
+    |Camera|Raspberry Pi Camera Module V2|
+    |Ultrasonic sensor|HC-SR04|
     |Communication Module|ES920LR|
     |GPS module|GYSFDMAXB|
     |Accelaration Sensor|BNO055|
-    |Motor|comming soon|
+    |Motor|comming soon...|
     |Motor Driver|TA7291P|
 
 ## Usage
