@@ -14,7 +14,8 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 
 ## Table of Contents
 - [Our Mission](#Our-Mission)
-- [Requirements](#Requirements)
+- [Hardware Requirements](#Hardware-Requirements)
+- [Software Requirements](#Software-Requirements)
 - [Usage](#usage)
 - [Project Member](#Project-Member)
 
@@ -23,7 +24,7 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 ### Mission Sequence
 ### Image Processing
 
-## Requirements
+## Hardware Requirements
 - Microcomputer
   - Raspberry Pi 3B+
 - Sensors
@@ -38,6 +39,14 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
     |Motor|comming soon...||
     |Motor Driver|[TA7291P](https://toshiba.semicon-storage.com/jp/semiconductor/product/motor-driver-ics/brushed-dc-motor-driver-ics/detail.TA7291P.html)||
 
+## Sofrware Requirements
+Firstly, you need to clone this repository
+```
+git clone 
+```
+1. OpenCV
+  
+  
 ## Usage
 ### Algorithm
 comming soon... 
