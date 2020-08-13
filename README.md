@@ -41,13 +41,40 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 
 ## Sofrware Requirements
 Firstly, you need to clone this repository
-```Python
-import cv2
+```
 git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
 ```
+### Softwar preparation
 1. OpenCV
-  
-  
+  go to `setup` folder and run `inst_opencv.sh` to install opencv
+  ```
+  bash inst_opencv.sh
+  ```
+  Check in python wether you successflly installed opencv
+  ```Python
+  import cv2
+  ```
+1. GPS Setup
+  ```
+  bash setup_gps.sh
+  ```
+1. I2C Setup
+  ```
+  bash setup_i2c.sh
+  ```
+1. Access Point Setup (Additional)
+  if you want to use Raspberry Pi remotely in **No Wi-fi** environment, you may want to use your Rasberry Pi as Wi-fi access point. Then go to `setup/ap` and run `setup_ap.sh`
+  ```
+  sudo bash setup_ap.sh
+  ```
+  Once you activate access point, you cannot connect your Raspberry Pi to other Wi-fi network. So you can turn it off by
+  ```
+  sudo bash ap_off.sh
+  ``
+  If you want to re-activate, then
+  ```
+  sudo bash ap_on.sh
+  ```
 ## Usage
 ### Algorithm
 comming soon... 
