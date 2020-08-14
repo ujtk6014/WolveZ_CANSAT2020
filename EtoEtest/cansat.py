@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 """
 Keio Wolve'Z cansat2020
 mission function
 Author Yuji Tanaka
-last update:2020/08/10
+last update:2020/08/12
 """
 
 #ライブラリの読み込み
@@ -45,12 +46,12 @@ class Cansat(object):
         self.landstate = 0 #landing statenの中でモータを一定時間回すためにlandのなかでもステート管理するため
         
         #変数
-        self.state = 0
+        self.state = 3
         self.laststate = 0
-        self.following=0 # state1の中で、カメラによる検知中か追従中かを区別、どちらもカメラを回しながら行いたいため
-        self.refollow=0
-        self.refollowstate=0
-        self.landstate =0
+        self.following = 0 # state1の中で、カメラによる検知中か追従中かを区別、どちらもカメラを回しながら行いたいため
+        self.refollow = 0
+        self.refollowstate = 0
+        self.landstate = 0
         
         #stateに入っている時刻の初期化
         self.preparingTime = 0
@@ -88,15 +89,14 @@ class Cansat(object):
         if self.bno055.begin() is not True:
             print("Error initializing device")
             exit()
-        
+    
     def sensor(self):
         self.gps.gpsread()
         self.bno055.bnoread()
         self.ultrasonic.getDistance()
         self.writeData()#txtファイルへのログの保存
         if not self.state == 1: #preparingのときは電波を発しない
-            #if self.timer%5==0:
-                self.sendRadio()#LoRaでログを送信
+            self.sendRadio()#LoRaでログを送信
     
     def writeData(self):
         self.timer = 1000*(time.time() - self.startTime) #経過時間 (ms)
@@ -109,28 +109,28 @@ class Cansat(object):
         datalog = str(self.timer) + ","\
                   + str(self.state) + ","\
                   + str(self.gps.Time) + ","\
-                  + str(self.gps.Lat) + ","\
-                  + str(self.gps.Lon) + ","\
-                  + str(self.Ax) + ","\
-                  + str(self.Ay) + ","\
-                  + str(self.Az) + ","\
-                  + str(self.dist) + ","\
-                  + str(self.rightmotor.velocity) + ","\
-                  + str(self.leftmotor.velocity)
+                  + str(self.gps.Lat).rjust(6) + ","\
+                  + str(self.gps.Lon).rjust(6) + ","\
+                  + str(self.Ax).rjust(6) + ","\
+                  + str(self.Ay).rjust(6) + ","\
+                  + str(self.Az).rjust(6) + ","\
+                  + str(self.dist).rjust(6) + ","\
+                  + str(self.rightmotor.velocity).rjust(6) + ","\
+                  + str(self.leftmotor.velocity).rjust(6)
         print(datalog)
         #with open('/home/pi/WolveZ_CANSAT2020/EtoEtest/TestResult/%s.txt' % self.filename,mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
             #test.write(datalog + '\n')
-          
+    
     def sendRadio(self):
         datalog = str(self.state) + ","\
                   + str(self.gps.Time) + ","\
                   + str(self.gps.Lat) + ","\
                   + str(self.gps.Lon) + ","\
-                  + str(self.ultrasonic.dist) + ","\
-                  + str(self.rightmotor.velocity) + ","\
-                  + str(self.leftmotor.velocity)
+                  + str(self.dist) #+ ","\
+                  #+ str(self.rightmotor.velocity) + ","\
+                  #+ str(self.leftmotor.velocity)
         self.radio.sendData(datalog) #データを送信
-        
+    
     def sequence(self):
         if self.state == 0:
             self.preparing()
@@ -171,7 +171,7 @@ class Cansat(object):
             self.GREEN_LED.led_off()
             self.rightmotor.stop()
             self.leftmotor.stop()
-
+        
         if GPIO.input(ct.const.FLIGHTPIN_PIN) == GPIO.HIGH:#highかどうか＝フライトピンが外れているかチェック
             self.countFlyLoop+=1
             if self.countFlyLoop > ct.const.COUNT_FLIGHTPIN_THRE:#一定時間HIGHだったらステート移行
@@ -179,7 +179,7 @@ class Cansat(object):
                 self.laststate = 2
         else:
             self.countFlyLoop = 0 #何故かLOWだったときカウントをリセット
-            
+    
     def dropping(self):
         if self.droppingTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
             self.droppingTime = time.time()
@@ -210,7 +210,7 @@ class Cansat(object):
             self.RED_LED.led_on()
             self.BLUE_LED.led_on()
             self.GREEN_LED.led_off()
-            
+        
         if not self.landingTime == 0:
             if self.landstate == 0:
                 GPIO.output(ct.const.RELEASING_PIN,1) #電圧をHIGHにして焼き切りを行う
@@ -218,7 +218,6 @@ class Cansat(object):
                     GPIO.output(ct.const.RELEASING_PIN,0) #焼き切りが危ないのでlowにしておく
                     self.pre_motorTime = time.time()
                     self.landstate = 1
-        
             #焼き切りが終わったあと一定時間モータを回して分離シートから脱出
             elif self.landstate == 1:
                 self.rightmotor.go(100)
@@ -231,7 +230,7 @@ class Cansat(object):
                     self.laststate = 4
                 else:
                     pass
-                
+    
     def waiting(self):
         if self.waitingTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
             GPIO.output(ct.const.RELEASING_PIN,0) #焼き切りしっぱなしでは怖いので保険
@@ -271,7 +270,7 @@ class Cansat(object):
             self.RED_LED.led_on()
             self.BLUE_LED.led_on()
             self.GREEN_LED.led_on()
-            
+        
         #以下に画像処理走行プログラム
         
         #写真撮影用
@@ -280,7 +279,6 @@ class Cansat(object):
         _, frame = self.capture.read() # 動画の読み込み
         # frame=cv2.resize(frame, (640,480)) # プレビューサイズ（いじらなくてよい）
         rects = self.camera.find_rect_of_target_color(frame) # 矩形の情報作成
-        
         
         if len(rects) > 0:
             rect = max(rects, key=(lambda x: x[2] * x[3]))  # 最大の矩形を探索
@@ -314,7 +312,7 @@ class Cansat(object):
                     else:
                         self.rightmotor.go(100)
                         self.leftmotor.go(100)
-                        
+                
                 if self.camera.direct==1:
                     if self.dist < ct.const.DISTANCE_THRE_END:
                         self.rightmotor.stop()
@@ -345,7 +343,7 @@ class Cansat(object):
                     self.leftmotor.stop()
             else:
                 self.countAreaLoopLose=0
-          
+            
             #超音波センサを用いた終了判定
             #self.ultrasonic.getDistance()
             if self.following==1 and self.ultrasonic.dist<ct.const.DISTANCE_THRE_END:
@@ -395,7 +393,6 @@ class Cansat(object):
                 self.refollow=1
                 self.rightmotor.stop()
                 self.leftmotor.stop()
-
     
     def goal(self):
         if self.goalTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
@@ -405,7 +402,7 @@ class Cansat(object):
             self.RED_LED.led_off()
             self.BLUE_LED.led_off()
             self.GREEN_LED.led_off()
-            
+        
         if self.countGoal < ct.const.COUNT_GOAL_LOOP_THRE:
             self.rightmotor.stopslowly()
             self.leftmotor.stopslowly()
@@ -413,9 +410,8 @@ class Cansat(object):
             self.rightmotor.stop()
             self.leftmotor.stop()
         self.countGoal+= 1
-            
-            
+        
         #sys.exit()
-            
+
 if __name__ == "__main__":
     pass

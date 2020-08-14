@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import cansat
 import cv2
 from time import sleep

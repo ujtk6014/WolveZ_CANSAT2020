@@ -40,7 +40,7 @@ class Ultrasonic(object):
                 break
 
         # GPIO を初期化しておく
-        GPIO.cleanup()
+        #GPIO.cleanup()
 
         # 時刻の差から、物体までの往復の時間を求め、距離を計算する
         timepassed = signalon - signaloff
