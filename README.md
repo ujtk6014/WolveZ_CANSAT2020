@@ -47,7 +47,7 @@ Firstly, you need to clone this repository
 git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
 ```
 ### Setups
-1. OpenCV  
+1.   OpenCV  
   go to `setup` folder and run `inst_opencv.sh` to install opencv
   ```
   bash inst_opencv.sh
