@@ -11,8 +11,6 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 <img src="https://user-images.githubusercontent.com/57528969/90110593-6fd8ee80-dd88-11ea-88c2-6b1f03e266d6.png" width="45%" title="Our CanSat">
 </div>
 
-<img src="https://user-images.githubusercontent.com/57528969/90201112-c8ee6400-de14-11ea-813f-d5e979560a7d.png" width="45%" title="Our CanSat">
-
 ## Table of Contents
 - [Our Mission](#Our-Mission)
   - [Human Following Robot](#Human-Following-Robot)
