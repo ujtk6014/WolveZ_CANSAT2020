@@ -22,10 +22,10 @@ class Camera(object):
     
     def find_rect_of_target_color(self,image):
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV_FULL)
-        h = hsv[:, :, 0] # 色相(Hue)                          
-        s = hsv[:, :, 1] #彩度(Saturation)
+        h = hsv[:, :, 0] # 色相(Hue) 0~360                         
+        s = hsv[:, :, 1] #彩度(Saturation) 0~255
         mask = np.zeros(h.shape, dtype=np.uint8) # 赤いところを示すマスクデータ作成
-        mask[((h < 20) | (h > 200)) & (s > 128)] = 255
+        mask[((h < 7) | (h > 239)) & (s > 150)] = 255 #defult:20,200,128
         # mask[((h < 20) | (h > 200)) & (s > 64)] = 255
         contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE) # 輪郭を作成
         rects = []
