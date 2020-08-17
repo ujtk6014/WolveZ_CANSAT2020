@@ -4,6 +4,8 @@ import cansat
 import cv2
 from time import sleep
 import RPi.GPIO as GPIO
+import sys
+import constant as ct
 
 can=cansat.Cansat()
 can.setup()
@@ -18,5 +20,6 @@ try:
         sleep(0.1)
 except KeyboardInterrupt:
     print('finished')
+    GPIO.output(ct.const.RELEASING_PIN,0) #焼き切りが危ないのでlowにしておく
     GPIO.cleanup()
     pass

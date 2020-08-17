@@ -46,7 +46,7 @@ class Cansat(object):
         self.landstate = 0 #landing statenの中でモータを一定時間回すためにlandのなかでもステート管理するため
         
         #変数
-        self.state = 3
+        self.state = 4
         self.laststate = 0
         self.following = 0 # state1の中で、カメラによる検知中か追従中かを区別、どちらもカメラを回しながら行いたいため
         self.refollow = 0
@@ -95,8 +95,8 @@ class Cansat(object):
         self.bno055.bnoread()
         self.ultrasonic.getDistance()
         self.writeData()#txtファイルへのログの保存
-        if not self.state == 1: #preparingのときは電波を発しない
-            self.sendRadio()#LoRaでログを送信
+        #if not self.state == 1: #preparingのときは電波を発しない
+        self.sendRadio()#LoRaでログを送信
     
     def writeData(self):
         self.timer = 1000*(time.time() - self.startTime) #経過時間 (ms)
@@ -365,9 +365,9 @@ class Cansat(object):
                 self.countAreaLoopEnd=0
             """
             
-            cv2.rectangle(frame, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) # フレームを生成
-        cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
-        frame=cv2.rotate(frame,cv2.ROTATE_180)
+            #cv2.rectangle(frame, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) # フレームを生成
+        #cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
+        #frame=cv2.rotate(frame,cv2.ROTATE_180)
         
         """
         # 一定間隔で状況を撮影
@@ -377,8 +377,8 @@ class Cansat(object):
         """
         
         
-        cv2.imshow('red', frame)
-        cv2.waitKey(1)
+        #cv2.imshow('red', frame)
+        #cv2.waitKey(1)
         
         #画面に赤い要素が全くない場合の見失い判定
         if self.following==1 and len(rects)==0:
