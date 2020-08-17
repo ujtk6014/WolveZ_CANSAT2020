@@ -52,7 +52,7 @@ git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
   ```
   bash inst_opencv.sh
   ```
-  &emsp;Check in python wether you successflly installed opencv
+  Check in python wether you successflly installed opencv
   ```Python
   import cv2
   ```
@@ -72,11 +72,11 @@ git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
   ```
   sudo bash setup_ap.sh
   ```
-  &emsp;Once you activate access point, you cannot connect your Raspberry Pi to other Wi-fi networks. So you can turn it off by
+  Once you activate access point, you cannot connect your Raspberry Pi to other Wi-fi networks. So you can turn it off by
   ```
   sudo bash ap_off.sh
   ```
-  &emsp;If you want to re-activate, then
+  If you want to re-activate, then
   ```
   sudo bash ap_on.sh
   ```
