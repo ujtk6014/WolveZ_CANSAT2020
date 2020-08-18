@@ -21,7 +21,7 @@ class Camera(object):
             self.gamma_cvt[i][0]=255*(float(i)/255)**(1.0/ct.const.GAMMA)
     
     def find_rect_of_target_color(self,image):
-        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV_FULL)
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV_FULL) #change RGB image to HSV image
         h = hsv[:, :, 0] # 色相(Hue) 0~360                         
         s = hsv[:, :, 1] #彩度(Saturation) 0~255
         mask = np.zeros(h.shape, dtype=np.uint8) # 赤いところを示すマスクデータ作成

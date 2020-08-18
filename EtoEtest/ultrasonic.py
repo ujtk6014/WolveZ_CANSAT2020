@@ -43,7 +43,7 @@ class Ultrasonic(object):
         distance = timepassed * 17000
         
         # 500cm 以上の場合はノイズと判断する
-        #if distance <= 500:
+        if distance <= 400:
             #return distance
-        self.dist=distance
+            self.dist=distance
         

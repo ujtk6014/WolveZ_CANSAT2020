@@ -9,7 +9,7 @@ Motor2 = motor.motor(20,21,12)
 print("motor run")
 Motor1.go(100)
 Motor2.go(100)
-time.sleep(4)
+time.sleep(10)
 """
 Motor.back(100)
 time.sleep(3)
