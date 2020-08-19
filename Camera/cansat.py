@@ -3,7 +3,7 @@ import cv2
 import sys
 
 import constant as ct
-
+import motor
 import camera
 import ultrasonic
 import bno055
@@ -23,6 +23,8 @@ class Cansat(object):
         self.camera=camera.Camera()
         self.ultrasonic=ultrasonic.Ultrasonic()
         self.bno055=bno055.BNO055()#クラス名のみ変えたため注意
+        self.rightmotor = motor.motor(ct.const.RIGHT_MOTOR_IN1_PIN,ct.const.RIGHT_MOTOR_IN2_PIN,ct.const.RIGHT_MOTOR_VREF_PIN)
+        self.leftmotor = motor.motor(ct.const.LEFT_MOTOR_IN1_PIN,ct.const.LEFT_MOTOR_IN2_PIN,ct.const.LEFT_MOTOR_VREF_PIN)
         
         self.timestep=0
 
@@ -38,10 +40,13 @@ class Cansat(object):
     
     def setup(self):
         self.bno055.setupBno(True)
-        self.camera.setupCamera()#ガンマ補正のためのセットアップ
+        #self.camera.setupCamera()#ガンマ補正のためのセットアップ
 
     def sensor(self):
         self.bno055.bnoread()
+        datalog= str(self.rightmotor.velocity).rjust(6) + ","\
+               + str(self.leftmotor.velocity).rjust(6)
+        print(datalog)
         #print('Ax=',self.bno055.Ax,',Ay=',self.bno055.Ay,',Az=',self.bno055.Az)
         #print('gx=',self.bno055.gx,',gy=',self.bno055.gy,',gz=',self.bno055.gz)
 
@@ -110,7 +115,6 @@ class Cansat(object):
             if self.following==1:
                 #print('モーターへの指示')
                 if self.camera.direct==0:
-                    else:
                         self.rightmotor.go(100)
                         self.leftmotor.go(100)
                 
@@ -162,6 +166,7 @@ class Cansat(object):
         
         cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
         #frame=cv2.flip(frame,0)#上下反転
+        frame=cv2.rotate(frame,cv2.ROTATE_180)
         cv2.imshow('red', frame)
         cv2.waitKey(1)
         
