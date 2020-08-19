@@ -17,7 +17,7 @@ class Cansat(object):
         self.countDistanceLoopStart=0
         self.countDistanceLoopEnd=0
         
-        self.state=0
+        self.state=1
         self.following=0 # state1の中で、カメラによる検知中か追従中かを区別、どちらもカメラを回しながら行いたいため
         
         self.camera=camera.Camera()
@@ -65,19 +65,23 @@ class Cansat(object):
         _, frame = self.capture.read() # 動画の読み込み
         # frame=cv2.resize(frame, (640,480)) # プレビューサイズ（いじらなくてよい）
         
+        """
         #以下でガンマ補正
         gray=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         mean, stddev=cv2.meanStdDev(gray)
         if stddev>ct.const.BLACKLIGHT_SD_UP or stddev<ct.const.BLACKLIGHT_SD_DOWN:
             frame=cv2.LUT(frame,self.camera.gamma_cvt)
+        """
         
         # 矩形の情報作成
         rects = self.camera.find_rect_of_target_color(frame) 
         
+        """
         # 一定間隔で状況を撮影
         if self.timestep%200==0:
             imName=str(self.timestep)+'image.jpg'
             cv2.imwrite(imName,frame)
+        """
         
         if len(rects) > 0:
             rect = max(rects, key=(lambda x: x[2] * x[3]))  # 最大の矩形を探索
@@ -106,16 +110,19 @@ class Cansat(object):
             if self.following==1:
                 #print('モーターへの指示')
                 if self.camera.direct==0:
-                    print('right motor:', 100)
-                    print('left motor:', 100)
+                    else:
+                        self.rightmotor.go(100)
+                        self.leftmotor.go(100)
+                
                 if self.camera.direct==1:
-                    print('right motor:', round(100*(1-self.camera.angle/180)))
-                    print('left motor:', 100)
+                        self.rightmotor.go(100)
+                        self.leftmotor.go(round(100*(1-self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
+                        
                 if self.camera.direct==-1:
-                    print('right motor:', 100)
-                    print('left motor:', round(100*(1-self.camera.angle/180)))
-                #ここにモーターへの指示内容をかく！
+                        self.rightmotor.go(round(100*(1-self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
+                        self.leftmotor.go(100)
             
+            """
             #見失い判定
             if self.following==1 and self.camera.area<ct.const.AREA_THRE_LOSE:
                 self.countAreaLoopLose+=1
@@ -127,7 +134,9 @@ class Cansat(object):
                     cv2.destroyAllWindows()
             else:
                 self.countAreaLoopLose=0
-          
+            """
+            
+            """
             #超音波センサを用いた終了判定
             self.ultrasonic.getDistance()
             if self.following==1 and self.ultrasonic.dist<ct.const.DISTANCE_THRE_END:
@@ -137,6 +146,7 @@ class Cansat(object):
                     self.state=2
             else:
                 self.countDistanceLoopEnd=0
+            """
             #矩形の面積を用いた終了判定
             """
             if self.area>self.camera.AREA_THRE_END:
@@ -155,6 +165,7 @@ class Cansat(object):
         cv2.imshow('red', frame)
         cv2.waitKey(1)
         
+        """
         #画面に赤い要素が全くない場合の見失い判定
         if self.following==1 and len(rects)==0:
             self.countAreaLoopLose+=1
@@ -164,6 +175,7 @@ class Cansat(object):
                 self.following=0
                 print('見失った2！')
                 cv2.destroyAllWindows()
+        """
 
     def finish(self):
         print('finished!')
