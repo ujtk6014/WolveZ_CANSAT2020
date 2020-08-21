@@ -52,7 +52,7 @@ git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
   ```
   bash inst_opencv.sh
   ```
-  Check in python wether you successflly installed opencv
+    Check in python wether you successflly installed opencv
   ```Python
   import cv2
   ```
