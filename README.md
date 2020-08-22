@@ -48,7 +48,7 @@ git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
 ```
 ### Setups
 1. **OpenCV**  
-  go to `setup` folder and run `inst_opencv.sh` to install opencv
+  OpenCV is necessary for implimenting image processing in order to recognize following target. Go to `setup` folder and run `inst_opencv.sh` to install opencv
   ```
   bash inst_opencv.sh
   ```
@@ -58,11 +58,13 @@ git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
   ```
 
 2. **GPS Setup**  
+  The proposed robot orients itself by GPS. Type this in terminal.
   ```
   bash setup_gps.sh
   ```
 
 3. **I2C Setup**  
+  I2C is one of the ways of serial communication. This is necessary for BNO055 (acceralation sensor)
   ```
   bash setup_i2c.sh
   ```
