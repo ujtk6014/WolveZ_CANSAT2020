@@ -1,4 +1,4 @@
-# Wolve'Z CANSAT2020
+# Wolve'Z CANSAT Project 2020
 Mission code in Python for Keio Wolve'Z CaSat project 2020
 
 ## About our CanSat
