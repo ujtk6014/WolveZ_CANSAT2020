@@ -28,7 +28,10 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 
 ## Hardware Requirements
 - Microcomputer
-  - Raspberry Pi 3B+
+  - Raspberry Pi 3B
+  <div align="center">
+  <img src="https://user-images.githubusercontent.com/57528969/90947202-008d8980-e46f-11ea-964d-d67bf354345d.png" width="45%" title="Raspberry Pi 3B">
+  </div>
 - Sensors
     
     |**Sensor**|**Products**|**image**|
