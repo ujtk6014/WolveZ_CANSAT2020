@@ -10,12 +10,13 @@ print("motor run")
 Motor1.go(100)
 Motor2.go(100)
 time.sleep(10)
-"""
-Motor.back(100)
-time.sleep(3)
+
+#Motor.back(100)
+#time.sleep(3)
 print("motor stop")
-Motor.stop()
+Motor1.stop()
+Motor2.stop()
 time.sleep(3)
-"""
+
 
 GPIO.cleanup()

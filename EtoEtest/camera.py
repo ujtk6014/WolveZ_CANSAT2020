@@ -41,9 +41,9 @@ class Camera(object):
     
     def find_direction(self,x_coordinate):
         angle=(x_coordinate-320)*31.1/320
-        if angle>10:
+        if angle>3:
             self.direct=1 # 右
-        elif angle<-10:
+        elif angle<-3:
             self.direct=-1 # 左
         else:
             self.direct=0# 直進

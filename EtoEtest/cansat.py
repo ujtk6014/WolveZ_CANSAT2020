@@ -46,7 +46,7 @@ class Cansat(object):
         self.landstate = 0 #landing statenの中でモータを一定時間回すためにlandのなかでもステート管理するため
         
         #変数
-        self.state = 0
+        self.state = 4
         self.laststate = 0
         self.following = 0 # state1の中で、カメラによる検知中か追従中かを区別、どちらもカメラを回しながら行いたいため
         self.refollow = 0
@@ -86,6 +86,7 @@ class Cansat(object):
         self.gps.setupGps()
         self.radio.setupRadio()
         self.bno055.setupBno()
+        self.camera.setupCamera()#ガンマ補正のためのセットアップ
         if self.bno055.begin() is not True:
             print("Error initializing device")
             exit()
@@ -280,6 +281,17 @@ class Cansat(object):
         
         _, frame = self.capture.read() # 動画の読み込み
         # frame=cv2.resize(frame, (640,480)) # プレビューサイズ（いじらなくてよい）
+        
+        #以下でガンマ補正
+        gray=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        mean, stddev=cv2.meanStdDev(gray)
+        #if stddev>ct.const.BLACKLIGHT_SD_UP or stddev<ct.const.BLACKLIGHT_SD_DOWN:
+        if stddev<ct.const.BLACKLIGHT_SD_DOWN:
+            frame=cv2.LUT(frame,self.camera.gamma_cvt)
+        
+        #frame=cv2.LUT(frame,self.camera.gamma_cvt)
+        #print(self.camera.gamma_cvt)
+        
         rects = self.camera.find_rect_of_target_color(frame) # 矩形の情報作成
         
         if len(rects) > 0:
@@ -342,14 +354,14 @@ class Cansat(object):
                         self.leftmotor.stop()
                     else:
                         self.rightmotor.go(100)
-                        self.leftmotor.go(round(100*(1-self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
+                        self.leftmotor.go(round(100*(1-ct.const.CAMERA_GAIN*self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
                         
                 if self.camera.direct==-1:
                     if self.countDistanceLoopEnd >= ct.const.DISTANCE_COUNT_LIMIT:
                         self.rightmotor.stop()
                         self.leftmotor.stop()
                     else:
-                        self.rightmotor.go(round(100*(1-self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
+                        self.rightmotor.go(round(100*(1-ct.const.CAMERA_GAIN*self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
                         self.leftmotor.go(100)
             #見失い判定
             if self.following==1 and self.camera.area<ct.const.AREA_THRE_LOSE:
@@ -364,12 +376,13 @@ class Cansat(object):
                     self.refollow=1
                     self.rightmotor.stop()
                     self.leftmotor.stop()
+                    self.countDistanceLoopStart=0
             else:
                 self.countAreaLoopLose=0
             
-            #cv2.rectangle(frame, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) # フレームを生成
-        #cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
-        #frame=cv2.rotate(frame,cv2.ROTATE_180)
+            cv2.rectangle(frame, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) # フレームを生成
+        cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
+        frame=cv2.rotate(frame,cv2.ROTATE_180)
         
         """
         # 一定間隔で状況を撮影
@@ -379,8 +392,8 @@ class Cansat(object):
         """
         
         
-        #cv2.imshow('red', frame)
-        #cv2.waitKey(1)
+        cv2.imshow('red', frame)
+        cv2.waitKey(1)
         
         #画面に赤い要素が全くない場合の見失い判定
         if self.following==1 and len(rects)==0:
@@ -395,6 +408,7 @@ class Cansat(object):
                 self.refollow=1
                 self.rightmotor.stop()
                 self.leftmotor.stop()
+                self.countDistanceLoopStart=0
     
     def goal(self):
         if self.goalTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
