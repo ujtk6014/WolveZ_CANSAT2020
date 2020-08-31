@@ -6,10 +6,10 @@ class led():
         GPIO.setmode(GPIO.BCM) #enable GPIO
         GPIO.setup(self.PIN,GPIO.OUT)
         GPIO.output(self.PIN,GPIO.LOW)
-           
+    
     def led_on(self): #turn on the led
         GPIO.output(self.PIN,GPIO.HIGH)
-        
+    
     def led_off(self): #turn off the led
         GPIO.output(self.PIN,GPIO.LOW)
     
@@ -18,5 +18,3 @@ class led():
     
     def led_clean(self):
         GPIO.cleanup()
-    
-

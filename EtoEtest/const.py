@@ -6,6 +6,6 @@ class _const(object):
         if name in self.__dict__:
             raise self.ConstError("Can't rebind const (%s)" % name)
         self.__dict__[name] = value
-        
+
 import sys
 sys.modules[__name__] = _const()

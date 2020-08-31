@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
+
 import time
 import radio_setting
 
 # LoRa送信用クラス
 class radio(object):
-
+    
     def __init__(self):
         # ES920LRデバイス名
         self.lora_device = "/dev/ttySOFT0"
@@ -34,11 +36,10 @@ class radio(object):
         """
         # LoRa設定
         self.sendDevice.setup_lora()
-        
-
+    
     # ES920LRデータ送信メソッド
     def sendData(self, datalog):        
         # LoRa(ES920LR)データ送信
         #print(datalog)
         self.sendDevice.cmd_lora(datalog)
-         
+    
