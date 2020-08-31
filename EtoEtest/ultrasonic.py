@@ -8,6 +8,10 @@ class Ultrasonic(object):
     
     def __init__(self):
         self.dist=0.0
+        
+        self.num=7
+        self.distdata = [0]*self.num
+        
         # 使用するピンの設定
         GPIO.setmode(GPIO.BCM)
         
@@ -43,7 +47,8 @@ class Ultrasonic(object):
         distance = timepassed * 17000
         
         # 500cm 以上の場合はノイズと判断する
-        if distance <= 400:
+        if distance <= 350:
             #return distance
             self.dist=distance
-        
+        else:
+            self.dist=500

@@ -46,12 +46,16 @@ class Cansat(object):
         self.landstate = 0 #landing statenの中でモータを一定時間回すためにlandのなかでもステート管理するため
         
         #変数
-        self.state = 4
+        self.state = 5
         self.laststate = 0
         self.following = 0 # state1の中で、カメラによる検知中か追従中かを区別、どちらもカメラを回しながら行いたいため
         self.refollow = 0
         self.refollowstate = 0
         self.landstate = 0
+        
+        #終了判定
+        self.b = 0
+        self.zero = 0
         
         #stateに入っている時刻の初期化
         self.preparingTime = 0
@@ -73,6 +77,7 @@ class Cansat(object):
         self.countAreaLoopLose=0 # 見失い判定用
         self.countDistanceLoopStart=0 # 距離による開始判定
         self.countDistanceLoopEnd=0 # 距離による終了判定
+        self.countgrass=0
         
         #GPIO設定
         GPIO.setmode(GPIO.BCM) #GPIOの設定
@@ -254,7 +259,8 @@ class Cansat(object):
                 self.refollowstate=0
         
         #以下に超音波センサによる動的物体発見プログラム
-        if self.ultrasonic.dist<ct.const.DISTANCE_THRE_START:
+        #if self.ultrasonic.dist<ct.const.DISTANCE_THRE_START:
+        if self.ultrasonic.dist!=500:
             self.countDistanceLoopStart+=1
             if self.countDistanceLoopStart>ct.const.COUNT_DISTANCE_LOOP_THRE_START:
                 print("対象認知＆カメラ処理開始")
@@ -305,6 +311,21 @@ class Cansat(object):
             
             #超音波センサを用いた終了判定
             #self.ultrasonic.getDistance()
+            #超音波センサを用いた終了判定
+            if self.following==1:
+                self.ultrasonic.distdata[1:self.ultrasonic.num]=self.ultrasonic.distdata[0:self.ultrasonic.num-1]
+                self.ultrasonic.distdata[0]=self.ultrasonic.dist
+                a = np.array(self.ultrasonic.distdata)
+                self.b = np.count_nonzero(a < 80)
+                self.zero = np.count_nonzero(a == 0)
+                print(a)
+                
+                if self.zero==0 and self.b>4:
+                    print("追従終了")
+                    cv2.imwrite('finish.jpg',frame)
+                    self.state=6
+                    self.lastsate=6
+            """
             if self.following==1 and self.ultrasonic.dist<ct.const.DISTANCE_THRE_END:
                 self.countDistanceLoopEnd+=1
                 if self.countDistanceLoopEnd>ct.const.COUNT_DISTANCE_LOOP_THRE_END:
@@ -314,6 +335,7 @@ class Cansat(object):
                     self.lastsate=6
             else:
                 self.countDistanceLoopEnd=0
+                """
             #矩形の面積を用いた終了判定
             """
             if self.camera.area>ct.const.AREA_THRE_END:
@@ -337,6 +359,22 @@ class Cansat(object):
                         self.countAreaLoopStart=0
             else:
                 self.countAreaLoopStart=0
+            '''
+            #カメラ起動しても赤色見つからないときの見失い
+            if self.following==0:
+                self.countgrass+=1
+                if self.countgrass>500:
+                    self.state=4
+                    self.laststate=4
+                    self.countAreaLoopLose=0
+                    print('見失った！3')
+                    cv2.destroyAllWindows()
+                    self.refollow=1
+                    self.rightmotor.stop()
+                    self.leftmotor.stop()
+                    self.countgrass=0
+            '''
+            
             #モーターへの指示を行う
             if self.following==1:
                 #print('モーターへの指示')
@@ -418,7 +456,10 @@ class Cansat(object):
             self.RED_LED.led_off()
             self.BLUE_LED.led_off()
             self.GREEN_LED.led_off()
-        
+            
+            self.rightmotor.stop()
+            self.leftmotor.stop()
+            """
         if self.countGoal < ct.const.COUNT_GOAL_LOOP_THRE:
             self.rightmotor.stopslowly()
             self.leftmotor.stopslowly()
@@ -426,6 +467,7 @@ class Cansat(object):
             self.rightmotor.stop()
             self.leftmotor.stop()
         self.countGoal+= 1
+        """
         
         #sys.exit()
 
