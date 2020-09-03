@@ -52,7 +52,6 @@ class Cansat(object):
         self.refollow = 0
         self.refollowstate = 0
         self.landstate = 0
-        
         #終了判定
         self.b = 0
         self.zero = 0
