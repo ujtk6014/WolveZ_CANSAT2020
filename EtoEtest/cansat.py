@@ -2,7 +2,7 @@
 """
 Keio Wolve'Z cansat2020
 mission function
-Author Yuji Tanak
+Author Yuji Tanaka
 last update:2020/09/07
 """
 
@@ -133,7 +133,7 @@ class Cansat(object):
                   + str(self.rightmotor.velocity).rjust(6) + ","\
                   + str(self.leftmotor.velocity).rjust(6)
         print(datalog)
-        with open('/home/pi/Desktop/WolveZ_CANSAT2020/EtoEtest/TestResult/%s.txt' % self.filename,mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
+        with open('/home/pi/Desktop/WolveZ_CANSAT2020/EtoEtest/TestResult/%s/%s.txt' % (self.filename,self.filename),mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
             test.write(datalog + '\n')
     
     def sendRadio(self):
@@ -331,7 +331,8 @@ class Cansat(object):
                 
                 if self.b > ct.const.DISTANCE_LIST_THRE:
                     print("追従終了")
-                    #cv2.imwrite('finish.jpg',frame)
+                    #fin_Name='./TestResult/'+self.filename+'/'+'FINISH.jpg'
+                    #cv2.imwrite(fin_Name,frame)
                     self.state=6
                     self.lastsate=6
             """
@@ -442,7 +443,7 @@ class Cansat(object):
         
         # 一定間隔で状況を撮影
         if self.timestep%20==0:
-            imName='./TestResult/'+self.filename+'_'+str(self.timer)+'image.jpg'
+            imName='./TestResult/'+self.filename+'/'+self.filename+'_'+str(self.timer)+'image.jpg'
             cv2.imwrite(imName,frame)
         
         
