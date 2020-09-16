@@ -14,14 +14,21 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 </div>
 
 ## Table of Contents
-- [Our Mission](#Our-Mission)
-  - [Human Following Robot](#Human-Following-Robot)
-  - [Mission Sequence](#Mission-Sequence)
-  - [Image Processing](#Image-Processing)
-- [Hardware Requirements](#Hardware-Requirements)
-- [Software Requirements](#Software-Requirements)
-- [Usage](#usage)
-- [Project Member](#Project-Member)
+- [Wolve'Z CANSAT Project 2020](#wolvez-cansat-project-2020)
+  - [About our CanSat](#about-our-cansat)
+    - [What is CanSat](#what-is-cansat)
+    - [Our CanSat: Autonomous Tracking by Image Processing](#our-cansat-autonomous-tracking-by-image-processing)
+  - [Table of Contents](#table-of-contents)
+  - [Our Mission](#our-mission)
+    - [Human Following Robot](#human-following-robot)
+    - [Mission Sequence](#mission-sequence)
+    - [Image Processing](#image-processing)
+  - [Hardware Requirements](#hardware-requirements)
+  - [Software Requirements](#software-requirements)
+    - [Setups](#setups)
+  - [Usage](#usage)
+    - [Algorithm](#algorithm)
+  - [Project Member](#project-member)
 
 ## Our Mission
 ### Human Following Robot
