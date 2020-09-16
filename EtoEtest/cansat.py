@@ -45,7 +45,7 @@ class Cansat(object):
         self.landstate = 0 #landing statenの中でモータを一定時間回すためにlandのなかでもステート管理するため
         
         #変数
-        self.state = 0
+        self.state = 1
         self.laststate = 0
         self.following=0 # state1の中で、カメラによる検知中か追従中かを区別、どちらもカメラを回しながら行いたいため
         self.refollow=0
