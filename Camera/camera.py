@@ -25,7 +25,7 @@ class Camera(object):
       h = hsv[:, :, 0] # 色相(Hue)                          
       s = hsv[:, :, 1] #彩度(Saturation)
       mask = np.zeros(h.shape, dtype=np.uint8) # 赤いところを示すマスクデータ作成
-      mask[((h < 20) | (h > 200)) & (s > 128)] = 255
+      mask[((h < 7) | (h > 230)) & (s > 128)] = 255
       # mask[((h < 20) | (h > 200)) & (s > 64)] = 255
       contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE) # 輪郭を作成
       rects = []
