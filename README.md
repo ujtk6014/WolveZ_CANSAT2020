@@ -60,15 +60,8 @@ git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
 ```
 ### Setups
 1. **OpenCV**  
-<<<<<<< HEAD
   OpenCV is necessary for implimenting image processing in order to recognize following target. Go to `setup` folder and run `inst_opencv.sh` to install opencv  
   <br/>
-=======
-  OpenCV is necessary for implimenting image processing in order to recognize following target. Go to `setup` folder and run `inst_opencv.sh` to install opencv
-  ```
-  bash inst_opencv.sh
-  ```
->>>>>>> 07d9622fcdbb986f5bba33706866f3a3a30fff22
   Check in python if you successflly installed opencv or not
   ```Python
   import cv2
