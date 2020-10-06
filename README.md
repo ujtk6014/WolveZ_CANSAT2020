@@ -79,6 +79,7 @@ git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
   Once you activate access point, you cannot connect your Raspberry Pi to other Wi-fi networks. So you can turn it off by running `ap_off.sh`  
   <br/>
   If you want to re-activate, then, run  `ap_on.sh`
+
 ## Usage
 ### Algorithm
 comming soon... 
