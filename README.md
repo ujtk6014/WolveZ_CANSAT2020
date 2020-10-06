@@ -60,14 +60,14 @@ git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
 ```
 ### Setups
 1. **OpenCV**  
-  OpenCV is necessary for implimenting image processing in order to recognize following target. Go to `setup` folder and run `inst_opencv.sh` to install opencv.  
-  <br>
+  OpenCV is necessary for implimenting image processing in order to recognize following target. Go to `setup` folder and run `inst_opencv.sh` to install opencv.
+<br>
   Check in python if you successflly installed opencv or not
   ```Python
   import cv2
   ```
 
-2. **GPS Setup**  
+1. **GPS Setup**  
   The proposed robot orients itself by GPS. run `setup_gps.sh`  in terminal.
 
 3. **I2C Setup**  
