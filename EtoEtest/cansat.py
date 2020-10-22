@@ -307,6 +307,7 @@ class Cansat(object):
             #self.ultrasonic.getDistance()
             if self.following==1 and self.ultrasonic.dist<ct.const.DISTANCE_THRE_END:
                 self.countDistanceLoopEnd+=1
+                #print(self.countDistanceLoopEnd)
                 if self.countDistanceLoopEnd>ct.const.COUNT_DISTANCE_LOOP_THRE_END:
                     print("追従終了")
                     cv2.imwrite('finish.jpg',frame)

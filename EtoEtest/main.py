@@ -19,11 +19,11 @@ try:
     while True:
         can.sensor()
         t1=time.time()
-        time.sleep(0.01)
+        #time.sleep(0.05)
         can.sequence()
         t2=time.time()
-        time.sleep(0.01)
-        print(t2-t1)
+        time.sleep(0.05)
+        #print(t2-t1)
 except KeyboardInterrupt:
     print('finished')
     GPIO.output(ct.const.RELEASING_PIN,0) #焼き切りが危ないのでlowにしておく

@@ -51,4 +51,4 @@ ultrasonic=Ultrasonic()
 while True:
     ultrasonic.getDistance()
     print(ultrasonic.dist)
-    time.sleep(0.05)
+    time.sleep(0.5)
