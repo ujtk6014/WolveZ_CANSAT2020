@@ -19,10 +19,17 @@ try:
     while True:
         can.sensor()
         t1=time.time()
+<<<<<<< HEAD
         #time.sleep(0.05)
         can.sequence()
         t2=time.time()
         time.sleep(0.05)
+=======
+        time.sleep(0.05)
+        can.sequence()
+        t2=time.time()
+        #time.sleep(0.05)
+>>>>>>> a1580ec6d89addfe56a7dc858d0680264009e7b0
         #print(t2-t1)
 except KeyboardInterrupt:
     print('finished')
