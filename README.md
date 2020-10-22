@@ -34,8 +34,17 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 ### Human Following Robot
 
 ### Mission Sequence
+Here is our Mission Sequence. After the landing, the rover starts searching for human by using ultrasonic sensor. Once it detects human, it activate the camera and start to follow the target human.
+
 <div align="center">
 <img src="https://user-images.githubusercontent.com/57528969/96898453-b0609100-14ca-11eb-8ec9-45d6982e07f1.png" width="80%" title="Mission Sequence">
+</div>
+
+**Re-Following**  
+Our CanSat have the abillity of re-following. In the case that it lost the target, it starts spinning, searching for the target using ultrasonic sensor. Once it detects the target again, it starts re-follow.
+
+<div align="center">
+<img src="https://user-images.githubusercontent.com/57528969/96900442-10583700-14cd-11eb-8eec-033e666a4063.png" width="80%" title="Refollow">
 </div>
 
 ### Image Processing Algorithm
