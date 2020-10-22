@@ -18,11 +18,11 @@ try:
     #while cv2.waitKey(1) < 0:
     while True:
         can.sensor()
-        #t1=time.time()
-        time.sleep(0.05)
-        can.sequence()
-        #t2=time.time()
+        t1=time.time()
         #time.sleep(0.05)
+        can.sequence()
+        t2=time.time()
+        time.sleep(0.05)
         #print(t2-t1)
 except KeyboardInterrupt:
     print('finished')

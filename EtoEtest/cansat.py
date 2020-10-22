@@ -4,6 +4,7 @@ Keio Wolve'Z cansat2020
 mission function
 Author Yuji Tanaka
 last update:2020/09/07
+
 """
 
 #ライブラリの読み込み
@@ -54,7 +55,6 @@ class Cansat(object):
         self.refollow = 0
         self.refollowstate = 0
         self.landstate = 0
-        
         #終了判定
         self.num = 10
         self.distdata = [0]*self.num
@@ -324,10 +324,11 @@ class Cansat(object):
             if self.following==1:
                 self.distdata[1:self.num]=self.distdata[0:self.num-1]
                 self.distdata[0]=self.dist
-                #print(self.distdata)
+
+                print(self.distdata)
                 a = np.array(self.distdata)
                 #print(a)
-                self.b = np.count_nonzero((1 < a) & (a < 100))
+                self.b = np.count_nonzero((1 < a) & (a < 80))
                 
                 if self.b > ct.const.DISTANCE_LIST_THRE:
                     print("追従終了")
@@ -338,6 +339,7 @@ class Cansat(object):
             """
             if self.following==1 and self.ultrasonic.dist<ct.const.DISTANCE_THRE_END:
                 self.countDistanceLoopEnd+=1
+                #print(self.countDistanceLoopEnd)
                 if self.countDistanceLoopEnd>ct.const.COUNT_DISTANCE_LOOP_THRE_END:
                     print("追従終了")
                     cv2.imwrite('finish.jpg',frame)
@@ -400,7 +402,7 @@ class Cansat(object):
                         self.leftmotor.stop()
                     else:
                         self.rightmotor.go(100)
-                        self.leftmotor.go(100)
+                        self.leftmotor.go(90)
                 
                 if self.camera.direct==1:
                     if self.countDistanceLoopEnd >= 3:#ct.const.DISTANCE_COUNT_LIMIT:
