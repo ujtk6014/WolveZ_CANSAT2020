@@ -32,9 +32,15 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 
 ## Our Mission
 ### Human Following Robot
-### Mission Sequence
-### Image Processing
 
+### Mission Sequence
+<div align="center">
+<img src="https://user-images.githubusercontent.com/57528969/96898453-b0609100-14ca-11eb-8ec9-45d6982e07f1.png" width="80%" title="Mission Sequence">
+</div>
+### Image Processing Algorithm
+<div align="center">
+<img src="https://user-images.githubusercontent.com/57528969/96898443-ae96cd80-14ca-11eb-9b5b-7c8019700ac0.png" width="80%" title="image processing">
+</div>
 ## Hardware Requirements
 - Microcomputer
   - Raspberry Pi 3B
