@@ -59,20 +59,19 @@ Firstly, you need to clone this repository
 git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
 ```
 ### Setups
-#### 1. OpenCV  
+**1. OpenCV** 
   OpenCV is necessary for implimenting image processing in order to recognize following target. Go to `setup` folder and run `inst_opencv.sh` to install opencv.
   Check in python if you successflly installed opencv or not
   ```Python
   import cv2
   ```
-
-#### 1. GPS Setup
+**2. GPS Setup**
   The proposed robot orients itself by GPS. run `setup_gps.sh`  in terminal.
 
-#### 3. I2C Setup  
+**3. I2C Setup**  
   I2C is one of the ways of serial communication. This is necessary for BNO055 (acceralation sensor). run `setup_i2c`
 
-#### 4. Access Point Setup (Additional)
+**4. Access Point Setup (Additional)**
   if you want to use Raspberry Pi remotely in **No Wi-fi** environment, you may want to use your Rasberry Pi as Wi-fi access point. Then go to `setup/ap` and run `setup_ap.sh`
   Once you activate access point, you cannot connect your Raspberry Pi to other Wi-fi networks. So you can turn it off by running `ap_off.sh`.
   If you want to re-activate, then, run  `ap_on.sh`
