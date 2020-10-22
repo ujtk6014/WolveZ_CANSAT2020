@@ -19,8 +19,7 @@ class LoraSettingClass:
         #self.reset_pin = ct.const.LORA_RESET_PIN
         #self.reset_pin = 19
         #self.set_mode = None
-        
-
+    
     # LoRaに対して命令コマンドを入力する
     def cmd_lora(self, cmd):
     #def cmd_lora(self, cmd=''):
@@ -29,7 +28,7 @@ class LoraSettingClass:
             return
         self.cmd = '{0}\r\n'.format(cmd)
         self.device.write(self.cmd.encode())
-        """
+    """
     # LoRaリセット
     def reset_lora(self):
         GPIO.setmode(GPIO.BOARD)
@@ -40,8 +39,8 @@ class LoraSettingClass:
         time.sleep(0.1)
         GPIO.cleanup()
         time.sleep(1)
-        """
-
+    """
+    
     def setup_lora(self):
     #def setup_lora(self, set_mode=''):
         # LoRa(ES920LR)設定
@@ -56,13 +55,13 @@ class LoraSettingClass:
             except Exception as e:
                 print(e)
                 continue
-            """
+        """
         # LoRa(ES920LR)コマンド入力
         for cmd in self.set_mode:
             self.cmd_lora(cmd)
             time.sleep(0.1)
-            """
-            """
+        """
+        """
         #受信用
         while self.device.inWaiting() > 0:
             try:
@@ -72,9 +71,9 @@ class LoraSettingClass:
             except Exception as e:
                 print(e)
                 continue
-                """
-
+        """
+    
     def close(self):
         self.device.close()
-        
+
 os.system("sudo insmod soft_uart.ko")#os

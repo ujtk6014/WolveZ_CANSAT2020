@@ -38,8 +38,13 @@ const.AREA_THRE_START=1000
 const.COUNT_AREA_LOOP_THRE_START=5
 const.COG_THRE_START=1000
 const.MAX_CAMERA_ANGLE=62.2
+<<<<<<< HEAD:EtoEtest/constant.py
 const.CAMERA_GAIN=1
 const.REFOLLOW_THRE=2#再探索の際のモーターへの指令数
 const.BLACKLIGHT_SD_UP=60#以下3つはガンマ補正に関する閾値
 const.BLACKLIGHT_SD_DOWN=40
 const.GAMMA=1.8
+=======
+const.REFOLLOW_THRE=5#再探索の際のモーターへの指令数
+    
+>>>>>>> 313076837b23c15386102b679899f6a153fc5f63:Ultrasonic/constant.py

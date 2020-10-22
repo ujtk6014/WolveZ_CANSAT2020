@@ -6,7 +6,7 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
   CanSat is a small satellite sized approximately as small as soda can.
   Our ultimate goal is to develop an autonomous tracking rover which is able to recognize a moving object such as humans or the other rover and chase it until it stops. This rover would be beneficial when it comes to space exploration, especially when building a base on the other planet, where there would be very few people. We can use it as carrier robot for example, when carring something from one point to another. We are hoping this rover would cooperate with humans and make human space activity more efficiant.
 
-### Our CanSat: Autonomous Tracking by Image Processing
+### Our CanSat: Autonomous Tracking Robot by Image Processing
   We are assuming a rover which has LRF and optimal camera. Autonomous tracking is accomplished by image processing and distance. Considerring the CanSat regulation, we are making a rover which has optical camera and ultrasonic sensor in order to realize autonomous tracking.
 
 <div align="center">
@@ -14,14 +14,21 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
 </div>
 
 ## Table of Contents
-- [Our Mission](#Our-Mission)
-  - [Human Following Robot](#Human-Following-Robot)
-  - [Mission Sequence](#Mission-Sequence)
-  - [Image Processing](#Image-Processing)
-- [Hardware Requirements](#Hardware-Requirements)
-- [Software Requirements](#Software-Requirements)
-- [Usage](#usage)
-- [Project Member](#Project-Member)
+- [Wolve'Z CANSAT Project 2020](#wolvez-cansat-project-2020)
+  - [About our CanSat](#about-our-cansat)
+    - [What is CanSat](#what-is-cansat)
+    - [Our CanSat: Autonomous Tracking Robot by Image Processing](#our-cansat-autonomous-tracking-robot-by-image-processing)
+  - [Table of Contents](#table-of-contents)
+  - [Our Mission](#our-mission)
+    - [Human Following Robot](#human-following-robot)
+    - [Mission Sequence](#mission-sequence)
+    - [Image Processing](#image-processing)
+  - [Hardware Requirements](#hardware-requirements)
+  - [Software Requirements](#software-requirements)
+    - [Setups](#setups)
+  - [Usage](#usage)
+    - [Algorithm](#algorithm)
+  - [Project Member](#project-member)
 
 ## Our Mission
 ### Human Following Robot
@@ -53,48 +60,32 @@ git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
 ```
 ### Setups
 1. **OpenCV**  
-  OpenCV is necessary for implimenting image processing in order to recognize following target. Go to `setup` folder and run `inst_opencv.sh` to install opencv
-  ```
-  bash inst_opencv.sh
-  ```
-  Check in python wether you successflly installed opencv
+  OpenCV is necessary for implimenting image processing in order to recognize following target. Go to `setup` folder and run `inst_opencv.sh` to install opencv.
+  Check in python if you successflly installed opencv or not
   ```Python
   import cv2
   ```
 
-2. **GPS Setup**  
-  The proposed robot orients itself by GPS. Type this in terminal.
-  ```
-  bash setup_gps.sh
-  ```
+1. **GPS Setup**  
+  The proposed robot orients itself by GPS. run `setup_gps.sh`  in terminal.
 
 3. **I2C Setup**  
-  I2C is one of the ways of serial communication. This is necessary for BNO055 (acceralation sensor)
-  ```
-  bash setup_i2c.sh
-  ```
+  I2C is one of the ways of serial communication. This is necessary for BNO055 (acceralation sensor). run `setup_i2c`
 
 4. **Access Point Setup (Additional)**  
   if you want to use Raspberry Pi remotely in **No Wi-fi** environment, you may want to use your Rasberry Pi as Wi-fi access point. Then go to `setup/ap` and run `setup_ap.sh`
-  ```
-  sudo bash setup_ap.sh
-  ```
-  Once you activate access point, you cannot connect your Raspberry Pi to other Wi-fi networks. So you can turn it off by
-  ```
-  sudo bash ap_off.sh
-  ```
-  If you want to re-activate, then
-  ```
-  sudo bash ap_on.sh
-  ```
+  Once you activate access point, you cannot connect your Raspberry Pi to other Wi-fi networks. So you can turn it off by running `ap_off.sh`.
+  If you want to re-activate, then, run  `ap_on.sh`
+
 ## Usage
 ### Algorithm
 comming soon... 
 
 ## Project Member
-- Project manager: 
+- Project manager   
   Yuki Ko
-- Software: 
-  Yuji Tanaka, Yuki Ko, Kazuki Oshima, Hikaru Kimura, Miyuki Nakamura
-- Hardware: 
-  Mina Park, Shinichiro Kaji
+- Softwar (★: Part leader)  
+  ★Yuji Tanaka, Yuki Ko, Kazuki Oshima, Hikaru Kimura, Miyuki Nakamura
+- Hardware (★: Part leader)  
+  ★Mina Park, Shinichiro Kaji
+  
