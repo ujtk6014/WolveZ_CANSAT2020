@@ -4,7 +4,7 @@ from matplotlib import pylab as plt
 
 #使うときは日付と見たい写真を変更する
 date = "20201023"
-pic_num = "20201023_150image.jpg"
+pic_num = "20200908_152717image.jpg"
 path = './TestResult/' + date + '/' + pic_num
 print(path)
 img = cv2.imread(path)
