@@ -1,10 +1,10 @@
 import cv2
 #import numpy as np
 import sys
+import os
 import datetime
 import constant as ct
 import camera
-import time
 
 class Cansat(object):
     
@@ -18,12 +18,12 @@ class Cansat(object):
         self.following=0 # state1の中で、カメラによる検知中か追従中かを区別、どちらもカメラを回しながら行いたいため
         
         self.camera=camera.Camera()
-        #開始時間の記録
-        self.startTime = time.time()
-        self.timer=0
+        self.timestep = 0
 
         date = datetime.datetime.now()
         self.filename = '{0:%Y%m%d}'.format(date)
+        path = "./TestResult/" + self.filename
+        os.makedirs(path, exist_ok=True)
 
     
     def setup(self):
@@ -31,9 +31,7 @@ class Cansat(object):
         pass 
 
     def run(self):
-        #写真撮影用
-        self.timer = 1000*(time.time() - self.startTime) #経過時間 (ms)
-        self.timer = int(self.timer)
+        self.timestep += 1
         _, frame = self.capture.read() # 動画の読み込み
         # frame=cv2.resize(frame, (640,480)) # プレビューサイズ（いじらなくてよい）
         
@@ -47,11 +45,6 @@ class Cansat(object):
         
         # 矩形の情報作成
         rects = self.camera.find_rect_of_target_color(frame) 
-        
-        # 一定間隔で状況を撮影
-        if self.timer%10==0:
-            imName='./TestResult/'+self.filename+'/'+self.filename+'_'+str(self.timer)+'image.jpg'
-            cv2.imwrite(imName,frame)
         
         if len(rects) > 0:
             rect = max(rects, key=(lambda x: x[2] * x[3]))  # 最大の矩形を探索
@@ -76,12 +69,12 @@ class Cansat(object):
             # else:
             #     self.countAreaLoopStart=0
             
-            print("elasped time:" + str(self.timer))
+            print("Timestep:" + str(self.timestep))
             if self.camera.direct==0:
                 print("right motor:"+ str(100) + "|" + "left motor:"+ str(100))
             
             if self.camera.direct==1:
-                print("right motor:"+ str(100) + "|" + "left motor:"+ str(round(100*(1-self.camera.angle/62.2)))
+                print("right motor:"+ str(100) + "|" + "left motor:"+ str(round(100*(1-self.camera.angle/62.2))))
 
             if self.camera.direct== -1:
                 print("right motor:"+ str(round(100*(1-self.camera.angle/62.2))) + "|" + "left motor:"+ str(100))
@@ -90,7 +83,12 @@ class Cansat(object):
             # print (13500//rect[3]) # 距離の概算出力
         
         cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
-        #frame=cv2.flip(frame,0)#上下反転
         frame=cv2.rotate(frame,cv2.ROTATE_180)
+        #frame=cv2.flip(frame,0)#上下反転
+        # 一定間隔で状況を撮影
+        if self.timestep%30==0:
+            imName='./TestResult/'+self.filename+'/'+self.filename+'_'+str(self.timestep)+'image.jpg'
+            cv2.imwrite(imName,frame)
+            
         cv2.imshow('red', frame)
         cv2.waitKey(1)
