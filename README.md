@@ -10,7 +10,7 @@ Mission code in Python for Keio Wolve'Z CaSat project 2020
   We are assuming a rover which has LRF and optimal camera. Autonomous tracking is accomplished by image processing and distance. Considerring the CanSat regulation, we are making a rover which has optical camera and ultrasonic sensor in order to realize autonomous tracking.
 
 <div align="center">
-<img src="https://user-images.githubusercontent.com/57528969/90110593-6fd8ee80-dd88-11ea-88c2-6b1f03e266d6.png" width="30%" title="Our CanSat">
+<img src="https://user-images.githubusercontent.com/57528969/90110593-6fd8ee80-dd88-11ea-88c2-6b1f03e266d6.png" width="0%" title="Our CanSat">
 </div>
 
 ## Table of Contents
