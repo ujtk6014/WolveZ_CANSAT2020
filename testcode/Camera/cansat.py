@@ -87,7 +87,7 @@ class Cansat(object):
         #frame=cv2.flip(frame,0)#上下反転
         # 一定間隔で状況を撮影
         if self.timestep%30==0:
-            imName='./TestResult/'+self.filename+'/'+self.filename+'_'+str(self.timestep)+'image.jpg'
+            imName='./TestResult/'+self.filename+'/'+ str(self.timestep)+'.jpg'
             cv2.imwrite(imName,frame)
             
         cv2.imshow('red', frame)
