@@ -44,8 +44,13 @@ class Cansat(object):
         """
         
         # 矩形の情報作成
-        rects = self.camera.find_rect_of_target_color(frame) 
+        rects = self.camera.find_rect_of_target_color(frame)
         
+        # 一定間隔で状況を撮影
+        if self.timestep%20==0:
+            imName='./TestResult/'+self.filename+'/'+ str(self.timestep)+'.jpg'
+            cv2.imwrite(imName,frame)
+                
         if len(rects) > 0:
             rect = max(rects, key=(lambda x: x[2] * x[3]))  # 最大の矩形を探索
             
@@ -78,17 +83,16 @@ class Cansat(object):
 
             if self.camera.direct== -1:
                 print("right motor:"+ str(round(100*(1-self.camera.angle/62.2))) + "|" + "left motor:"+ str(100))
+            
 
             cv2.rectangle(frame, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) # フレームを生成
+            cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
             # print (13500//rect[3]) # 距離の概算出力
         
-        cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
-        frame=cv2.rotate(frame,cv2.ROTATE_180)
+        
+        
         #frame=cv2.flip(frame,0)#上下反転
-        # 一定間隔で状況を撮影
-        if self.timestep%30==0:
-            imName='./TestResult/'+self.filename+'/'+ str(self.timestep)+'.jpg'
-            cv2.imwrite(imName,frame)
-            
+        #frame=cv2.rotate(frame,cv2.ROTATE_180)
+
         cv2.imshow('red', frame)
         cv2.waitKey(1)
