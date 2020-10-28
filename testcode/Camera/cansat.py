@@ -34,6 +34,7 @@ class Cansat(object):
         self.timestep += 1
         _, frame = self.capture.read() # 動画の読み込み
         # frame=cv2.resize(frame, (640,480)) # プレビューサイズ（いじらなくてよい）
+        frame=cv2.rotate(frame,cv2.ROTATE_180)
         
         """
         #以下でガンマ補正
@@ -47,7 +48,7 @@ class Cansat(object):
         rects = self.camera.find_rect_of_target_color(frame)
         
         # 一定間隔で状況を撮影
-        if self.timestep%20==0:
+        if self.timestep%10==0:
             imName='./TestResult/'+self.filename+'/'+ str(self.timestep)+'.jpg'
             cv2.imwrite(imName,frame)
                 
