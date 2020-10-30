@@ -6,13 +6,14 @@ import camera
 can = camera.Camera()
 
 #使うときは日付と見たい写真を変更する
-date = "20201023"
-pic_num = "240.jpg"
+date = "20201028_1"
+pic_num = "520.jpg"
 path = './TestResult/' + date + '/' + pic_num
 print(path)
 img = cv2.imread(path)
 #平滑化
 img_hist_eq = img.copy()
+img_hist_eq_adap =img.copy()
 # plt.subplot(3,1,1)
 
 # 矩形の情報作成
@@ -20,13 +21,15 @@ rects = can.find_rect_of_target_color(img)
 if len(rects) > 0:
     rect = max(rects, key=(lambda x: x[2] * x[3]))  # 最大の矩形を探索
 cv2.rectangle(img, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) 
-cv2.imshow('original',img)
+cv2.imshow('original image',img)
 # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-
+########################################################################################################
+#普通の平坦化
 # RGBそれぞれを平坦化
 for i in range(3):
     img_hist_eq[:, :, i] = cv2.equalizeHist(img_hist_eq[:, :, i])
+    
 
 # 矩形の情報作成
 rects = can.find_rect_of_target_color(img_hist_eq)
@@ -35,7 +38,24 @@ if len(rects) > 0:
     rect = max(rects, key=(lambda x: x[2] * x[3]))  # 最大の矩形を探索
 
 cv2.rectangle(img_hist_eq, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) 
-cv2.imshow('converted',img_hist_eq)
+cv2.imshow('converted image',img_hist_eq)
+
+
+#######################################################################################################
+# 適応的平坦化
+# RGBそれぞれを適応的に平坦化（８＊８の領域ごとに平坦化していく）
+for i in range(3):
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    img_hist_eq_adap[:, :, i] = clahe.apply(img_hist_eq_adap[:, :, i])
+
+# 矩形の情報作成
+rects = can.find_rect_of_target_color(img_hist_eq_adap)
+print(len(rects))
+if len(rects) > 0:
+    rect = max(rects, key=(lambda x: x[2] * x[3]))  # 最大の矩形を探索
+
+cv2.rectangle(img_hist_eq_adap, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) 
+cv2.imshow('adaptive converted image',img_hist_eq_adap)
 cv2.waitKey(0) # キー待ち
 cv2.destroyAllWindows()
 
