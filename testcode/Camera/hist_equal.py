@@ -6,8 +6,10 @@ import camera
 can = camera.Camera()
 
 #使うときは日付と見たい写真を変更する
-date = "20201028_1"
-pic_num = "520.jpg"
+# date = input('Please input date (ex:20201023):')
+date =  '20201028_1'
+pic_num = input('enter the picture number:')
+pic_num = pic_num + ".jpg"
 path = './TestResult/' + date + '/' + pic_num
 print(path)
 img = cv2.imread(path)
