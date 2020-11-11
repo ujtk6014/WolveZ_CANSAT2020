@@ -7,11 +7,12 @@ can = camera.Camera()
 
 #使うときは日付と見たい写真を変更する
 # date = input('Please input date (ex:20201023):')
-date =  '20201030'
-pic_num = input('enter the picture number:')
-pic_num = pic_num + ".jpg"
+date =  '20201023'
+# pic_num = input('enter the picture number:')
+# pic_num = pic_num + ".jpg"
+# print(path)
+pic_num = "140.jpg"
 path = './TestResult/' + date + '/' + pic_num
-print(path)
 img = cv2.imread(path)
 #平滑化
 img_hist_eq = img.copy()
