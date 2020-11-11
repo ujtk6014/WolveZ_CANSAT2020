@@ -3,8 +3,8 @@ import numpy as np
 from matplotlib import pylab as plt
 
 #使うときは日付と見たい写真を変更する
-date = "20201028_1"
-pic_num = "520.jpg"
+date = "20201030"
+pic_num = "1430.jpg"
 path = './TestResult/' + date + '/' + pic_num
 print(path)
 img = cv2.imread(path)

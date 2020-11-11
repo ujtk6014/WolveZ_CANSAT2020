@@ -7,7 +7,7 @@ can = camera.Camera()
 
 #使うときは日付と見たい写真を変更する
 # date = input('Please input date (ex:20201023):')
-date =  '20201028_1'
+date =  '20201030'
 pic_num = input('enter the picture number:')
 pic_num = pic_num + ".jpg"
 path = './TestResult/' + date + '/' + pic_num
