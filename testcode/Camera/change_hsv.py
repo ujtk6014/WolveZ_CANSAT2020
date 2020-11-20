@@ -18,7 +18,7 @@ def main():
                 break
             
             #使うときは日付と見たい写真を変更する
-            date = "20201030"
+            date = "20201120"
             pic_num = str(pic) + '.jpg'
             path = './TestResult/' + date + '/' + pic_num
             print(path)
@@ -84,7 +84,7 @@ def main():
                 elif key==ord('a'):             # keyが a だったらトラックバーから閾値を読み取ってもう一度画像処理
                     pass
 
-                elif key==ord('f'):　　　　　　　# keyが f だったら全体のループを終了
+                elif key==ord('f'):             # keyが f だったら全体のループを終了
                     finish=1
                     break
                 

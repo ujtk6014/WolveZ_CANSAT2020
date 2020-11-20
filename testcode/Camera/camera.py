@@ -30,9 +30,9 @@ class Camera(object):
       mean, stddev=cv2.meanStdDev(gray)
       if stddev>70 or stddev<30:
           print('逆光検知')
-          mask[((h < 7) | (h > 230)) & (s > 64)] = 255
+          mask[((h < 7) | (h > 230)) & (s > 85)] = 255
       else:
-          mask[((h < 7) | (h > 230)) & (s > 128)] = 255
+          mask[((h < 7) | (h > 230)) & (s > 85)] = 255
       # mask[((h < 20) | (h > 200)) & (s > 64)] = 255
       contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE) # 輪郭を作成
       rects = []

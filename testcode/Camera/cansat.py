@@ -55,7 +55,7 @@ class Cansat(object):
         if len(rects) > 0:
             rect = max(rects, key=(lambda x: x[2] * x[3]))  # 最大の矩形を探索
             
-            #各パラメータの計算
+             #各パラメータの計算
             self.camera.find_center_of_gravity(rect) # 重心の計算
             self.camera.find_angle(self.camera.cgx) # 角度の計算、絶対値
             self.camera.find_direction(self.camera.cgx) # 進む方向

@@ -9,6 +9,7 @@ class Ultrasonic(object):
   
     def __init__(self):
         self.dist=0.0
+        self.count = 0
         # 使用するピンの設定
         GPIO.setmode(GPIO.BCM)
 
@@ -27,7 +28,12 @@ class Ultrasonic(object):
         # ECHO ピンがHIGHになるのを待つ
         signaloff = time.time()
         while GPIO.input(ct.const.ULTRASONIC_ECHO) == GPIO.LOW:
+            self.count+=1
+#             print(self.count)
             signaloff = time.time()
+            if self.count>500:
+                break
+        self.count=0
 
         # ECHO ピンがLOWになるのを待つ
         signalon = signaloff
@@ -51,5 +57,5 @@ ultrasonic=Ultrasonic()
 while True:
     ultrasonic.getDistance()
     print(ultrasonic.dist)
-    time.sleep(0.5)
+    time.sleep(0.1)
 
