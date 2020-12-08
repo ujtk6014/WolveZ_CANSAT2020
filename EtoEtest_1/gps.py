@@ -17,6 +17,7 @@ class GPS(object):
         s.readline() # 最初の1行は中途半端なデーターが読めることがあるので、捨てる
         while True:
             sentence = s.readline().decode('utf-8') # GPSデーターを読み、文字列に変換する
+            #print(sentence)
             if sentence[0] != '$': # 先頭が'$'でなければ捨てる
                 continue
             for x in sentence: # 読んだ文字列を解析してGPSオブジェクトにデーターを追加、更新する
@@ -35,8 +36,8 @@ class GPS(object):
             s = str('%02d' % (self.mgps.timestamp[2]))
             self.Time = h + ":" + m + ":" + s
             
-            self.Lat = str('%2.3f' % (self.mgps.latitude[0]))
-            self.Lon = str('%2.3f' % (self.mgps.longitude[0]))
+            self.Lat = str('%2.6f' % (self.mgps.latitude[0]))
+            self.Lon = str('%2.6f' % (self.mgps.longitude[0]))
             
             #print('時間：', self.Time, ",", end='')     #main.pyで格納を確認するため、最後は消す
             #print('緯度：', self.Lat, ",", end='')

@@ -17,7 +17,7 @@ class motor():
         GPIO.output(self.pin2,0)
         
         self.velocity = 0
-        self.pwm = GPIO.PWM(vref,50) #電圧を参照するピンを周波数50HZに指定（Arduinoはデフォルトで490だけど、ラズパイはネットだと50HZがメジャーそうだった）
+        self.pwm = GPIO.PWM(vref,490) #電圧を参照するピンを周波数50HZに指定（Arduinoはデフォルトで490だけど、ラズパイはネットだと50HZがメジャーそうだった）
     
 #正転
     def go(self,v):

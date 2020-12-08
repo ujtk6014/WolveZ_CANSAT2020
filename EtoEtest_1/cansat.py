@@ -3,8 +3,7 @@
 Keio Wolve'Z cansat2020
 mission function
 Author Yuji Tanaka
-last update:2020/10/22
-
+last update:2020/12/03
 """
 
 #ライブラリの読み込み
@@ -43,25 +42,26 @@ class Cansat(object):
         #開始時間の記録
         self.startTime = time.time()
         self.timer = 0
-        self.timestep=0#写真撮影用
+        self.timestep = 0#写真撮影用
+        self.timestep2 = 0#誤って終了判定したときに追従フェーズへ戻す用
         self.landstate = 0 #landing statenの中でモータを一定時間回すためにlandのなかでもステート管理するため
-        self.v_right = 100
-        self.v_left = 98
         
         #変数
-        self.state = 0
+        self.state = 5
         self.laststate = 0
         self.following = 0 # state1の中で、カメラによる検知中か追従中かを区別、どちらもカメラを回しながら行いたいため
         self.refollow = 0
-        self.refollowstate = 0
+        self.refollowstate = 5
         self.landstate = 0
-        #終了判定
-        self.num = 10
-        self.distdata = [0]*self.num
-        self.b = 0
-        #超音波センサ用変数
-        self.countUltrasonic = 0
+        self.angle_tmp=0
         
+        #終了判定
+        self.num = 6
+        self.distdata = [100]*self.num
+        self.b = 0
+        
+        #スタック判定用
+        self.countStuck=0
         #stateに入っている時刻の初期化
         self.preparingTime = 0
         self.flyingTime = 0
@@ -70,6 +70,7 @@ class Cansat(object):
         self.pre_motorTime = 0
         self.waitingTime = 0
         self.runningTime = 0
+        self.stuckTime = 0
         self.goalTime = 0
         
         #state管理用変数初期化
@@ -102,22 +103,22 @@ class Cansat(object):
             exit()
     
     def sensor(self):
-        self.timer = 1000*(time.time() - self.startTime) #経過時間 (ms)
-        self.timer = int(self.timer)
-        #self.countUltrasonic+=1
         self.gps.gpsread()
         self.bno055.bnoread()
-        #if self.countUltrasonic%10==0:
         self.ultrasonic.getDistance()
         self.writeData()#txtファイルへのログの保存
-        if not self.state == 1: #preparingのときは電波を発しない
+        if self.state == 0 or self.state == 2 or self.state == 4 or self.state== 6 : #preparingのときは電波を発しない
             self.sendRadio()#LoRaでログを送信
     
     def writeData(self):
+        self.timer = 1000*(time.time() - self.startTime) #経過時間 (ms)
+        self.timer = int(self.timer)
         self.Ax=round(self.bno055.Ax,3)
         self.Ay=round(self.bno055.Ay,3)
         self.Az=round(self.bno055.Az,3)
-        self.dist=round(self.ultrasonic.dist,2) 
+        self.dist=round(self.ultrasonic.dist,2)
+        #スタックチェック用
+        #print(pow(self.bno055.Ax,2) + pow(self.bno055.Ay,2) + pow(self.bno055.Az,2))
         #if self.dist < ct.const.DISTANCE_THRE_END:
             #self.dist = "[" + str(self.dist) + "]"
         #ログデータ作成。\マークを入れることで改行してもコードを続けて書くことができる
@@ -131,9 +132,10 @@ class Cansat(object):
                   + str(self.Az).rjust(6) + ","\
                   + str(self.dist).rjust(6) + ","\
                   + str(self.rightmotor.velocity).rjust(6) + ","\
-                  + str(self.leftmotor.velocity).rjust(6)
+                  + str(self.leftmotor.velocity).rjust(6) + ","\
+                  + str(self.following).rjust(6)
         print(datalog)
-        with open('/home/pi/Desktop/WolveZ_CANSAT2020/EtoEtest/TestResult/%s/%s.txt' % (self.filename,self.filename),mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
+        with open('/home/pi/WolveZ_CANSAT2020/EtoEtest/Testresult/%s/%s.txt' % (self.filename,self.filename),mode = 'a') as test: # [mode] x:ファイルの新規作成、r:ファイルの読み込み、w:ファイルへの書き込み、a:ファイルへの追記
             test.write(datalog + '\n')
     
     def sendRadio(self):
@@ -161,6 +163,8 @@ class Cansat(object):
             self.running()
         elif self.state == 6:
             self.goal()
+        elif self.state == 7:
+            self.stuck()
         else:
             self.state = self.laststate #どこにも引っかからない場合何かがおかしいのでlaststateに戻してあげる
     
@@ -172,6 +176,7 @@ class Cansat(object):
             self.GREEN_LED.led_off()
             self.rightmotor.stop()
             self.leftmotor.stop()
+            GPIO.output(ct.const.RELEASING_PIN,0)
         #self.countPreLoop+ = 1
         if not self.preparingTime == 0:
             if time.time() - self.preparingTime > ct.const.PREPARING_TIME_THRE:
@@ -207,8 +212,8 @@ class Cansat(object):
         if (pow(self.bno055.Ax,2) + pow(self.bno055.Ay,2) + pow(self.bno055.Az,2)) < pow(ct.const.ACC_THRE,2):#加速度が閾値以下で着地判定
             self.countDropLoop+=1
             if self.countDropLoop > ct.const.COUNT_ACC_LOOP_THRE:
-                self.state = 3
-                self.laststate = 3
+                self.state = 6
+                self.laststate = 6
         else:
             self.countDropLoop = 0 #初期化の必要あり
         """
@@ -241,8 +246,8 @@ class Cansat(object):
                 if time.time()-self.pre_motorTime > ct.const.PRE_MOTOR_TIME_THRE:
                     self.rightmotor.stop()
                     self.leftmotor.stop()
-                    self.state = 4
-                    self.laststate = 4
+                    self.state = 5
+                    self.laststate = 5
                 else:
                     pass
     
@@ -254,16 +259,16 @@ class Cansat(object):
             self.BLUE_LED.led_on()
             self.GREEN_LED.led_on()
         
-        if self.refollow==1:
-            self.refollowstate+=1
-            if self.refollowstate<ct.const.REFOLLOW_THRE:
-                self.rightmotor.go(100)
-                self.leftmotor.back(100)
-            else:
-                self.rightmotor.stop()
-                self.leftmotor.stop()
-            if self.refollowstate > 100:
-                self.refollowstate=0
+#         if self.refollow==1:
+#             self.refollowstate+=1
+#             if self.refollowstate<ct.const.REFOLLOW_THRE:
+#                 self.rightmotor.go(70)
+#                 self.leftmotor.back(70)
+#             else:
+#                 self.rightmotor.stop()
+#                 self.leftmotor.stop()
+#             if self.refollowstate > 100:
+#                 self.refollowstate=0
         
         #以下に超音波センサによる動的物体発見プログラム
         #if self.ultrasonic.dist<ct.const.DISTANCE_THRE_START:
@@ -280,20 +285,50 @@ class Cansat(object):
         else:
             self.countDistanceLoopStart=0
     
+    def stuck(self):
+        if self.stuckTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
+            GPIO.output(ct.const.RELEASING_PIN,0) #焼き切りしっぱなしでは怖いので保険
+            self.stuckTime = time.time()
+            self.RED_LED.led_off()
+            self.BLUE_LED.led_off()
+            self.GREEN_LED.led_off()
+        
+        self.rightmotor.go(100)
+        self.leftmotor.go(100)
+        if not self.stuckTime == 0:
+            if time.time() - self.stuckTime > 2:
+                self.state = 5
+                self.laststate = 5
+                self.stuckTime = 0
+                self.rightmotor.stop()
+                self.leftmotor.stop()
+        
     def running(self):
         if self.runningTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
+            GPIO.output(ct.const.RELEASING_PIN,0) #焼き切りしっぱなしでは怖いので保険
             self.runningTime = time.time()
             self.RED_LED.led_on()
             self.BLUE_LED.led_on()
             self.GREEN_LED.led_on()
+
+        #スタック判定
+        if (pow(self.bno055.Ax,2) + pow(self.bno055.Ay,2) + pow(self.bno055.Az,2)) < ct.const.STUCK_ACC_THRE and self.following==1:
+            self.countStuck+=1
+            if self.countStuck>ct.const.COUNT_STUCK_LOOP_THRE:
+                self.state=7
+                self.laststate=7
+                self.following = 0
+                self.countStuck=0
+        else:
+            self.countStuck=0
         
         #以下に画像処理走行プログラム
         
         #写真撮影用
         self.timestep+=1
         
-        _, frame = self.capture.read() # 動画の読み込み
-        #frame=cv2.resize(frame, (640,480)) # プレビューサイズ（いじらなくてよい）
+        _, frame = self.capture.read() #  動画の読み込み
+        # frame=cv2.resize(frame, (640,480)) # プレビューサイズ（いじらなくてよい）
         
         '''
         #以下でガンマ補正
@@ -308,6 +343,21 @@ class Cansat(object):
         '''
         
         rects = self.camera.find_rect_of_target_color(frame) # 矩形の情報作成
+        
+        if self.following==0: #and self.camera.area<ct.const.AREA_THRE_START:
+            #print(self.refollowstate)
+            self.refollowstate+=1
+            if self.refollowstate<ct.const.REFOLLOW_THRE:
+                self.rightmotor.go(40)
+                self.leftmotor.back(40)
+            #elif self.refollowstate>40 and self.refollowstate<42:
+                #self.rightmotor.go(40)
+                #self.leftmotor.go(60)
+            elif self.refollowstate>30:
+                self.refollowstate=0
+            else:
+                self.rightmotor.stop()
+                self.leftmotor.stop()
         
         if len(rects) > 0:
             rect = max(rects, key=(lambda x: x[2] * x[3]))  # 最大の矩形を探索
@@ -324,18 +374,23 @@ class Cansat(object):
             if self.following==1:
                 self.distdata[1:self.num]=self.distdata[0:self.num-1]
                 self.distdata[0]=self.dist
-
-                print(self.distdata)
+                #print(self.distdata)
                 a = np.array(self.distdata)
                 #print(a)
-                self.b = np.count_nonzero((1 < a) & (a < 80))
-                
-                if self.b > ct.const.DISTANCE_LIST_THRE:
+                self.b = np.count_nonzero((1 < a) & (a < 30))
+#                 print(self.b)
+                if self.b > 4:
+                #self.b=np.median(a)
+                #if self.b<80:
+                #if self.b > ct.const.DISTANCE_LIST_THRE:
                     print("追従終了")
-                    #fin_Name='./TestResult/'+self.filename+'/'+'FINISH.jpg'
-                    #cv2.imwrite(fin_Name,frame)
+                    cv2.imwrite('finish.jpg',frame)
+                    self.following=0
+                    self.b=0
+                    self.distdata = [100]*self.num
                     self.state=6
-                    self.lastsate=6
+                    self.laststate=6
+                    
             """
             if self.following==1 and self.ultrasonic.dist<ct.const.DISTANCE_THRE_END:
                 self.countDistanceLoopEnd+=1
@@ -358,7 +413,7 @@ class Cansat(object):
                 self.countAreaLoopEnd=0
             """
             
-            #追従開始判定
+            #追従開始判定&探索
             if self.following==0 and self.camera.area>ct.const.AREA_THRE_START:
                 self.countAreaLoopStart+=1
                 if self.countAreaLoopStart==1:
@@ -369,6 +424,7 @@ class Cansat(object):
                         print("追従開始")
                         self.following=1
                         self.countAreaLoopStart=0
+                        self.refollowstate=0
             else:
                 self.countAreaLoopStart=0
             '''
@@ -389,65 +445,64 @@ class Cansat(object):
             
             #モーターへの指示を行う
             if self.following==1:
-                #print('モーターへの指示')
-                if self.ultrasonic.dist<ct.const.DISTANCE_THRE_END:
-                    self.countDistanceLoopEnd+=1
-                    print(self.countDistanceLoopEnd)
-                else:
-                    self.countDistanceLoopEnd=0
-                    
-                if self.camera.direct==0:
-                    if self.countDistanceLoopEnd >= 3: #ct.const.DISTANCE_COUNT_LIMIT:
-                        self.rightmotor.stop()
-                        self.leftmotor.stop()
-                    else:
-                        self.rightmotor.go(100)
-                        self.leftmotor.go(90)
                 
-                if self.camera.direct==1:
-                    if self.countDistanceLoopEnd >= 3:#ct.const.DISTANCE_COUNT_LIMIT:
+                #print('モーターへの指示')
+                if self.camera.direct==0:
+                
+                    if self.countDistanceLoopEnd >= ct.const.DISTANCE_COUNT_LIMIT:
                         self.rightmotor.stop()
                         self.leftmotor.stop()
                     else:
-                        self.rightmotor.go(100)
-                        #self.leftmotor.go(round(70*(1-ct.const.CAMERA_GAIN1*self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
-                        self.leftmotor.go(round(100*(1-1.2*self.camera.angle/62.2)))
-                        
+                        self.rightmotor.go(80)
+                        self.leftmotor.go(80)
+                
                 if self.camera.direct==-1:
-                    if self.countDistanceLoopEnd >= 3:#ct.const.DISTANCE_COUNT_LIMIT:
+                    if self.countDistanceLoopEnd >= ct.const.DISTANCE_COUNT_LIMIT:
                         self.rightmotor.stop()
                         self.leftmotor.stop()
                     else:
-                        #self.rightmotor.go(round(100*(1-ct.const.CAMERA_GAIN2*self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
-                        self.rightmotor.go(round(100*(1-1.2*self.camera.angle/62.2)))
-                        self.leftmotor.go(100)
+                        self.leftmotor.go(80)
+                        self.rightmotor.go(round(80*(1-ct.const.CAMERA_GAIN1*self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
+#                         self.leftmotor.go(100)
+                        
+                if self.camera.direct==1:
+                    if self.countDistanceLoopEnd >= ct.const.DISTANCE_COUNT_LIMIT:
+                        self.rightmotor.stop()
+                        self.leftmotor.stop()
+                    else:
+                        self.leftmotor.go(round(80*(1-ct.const.CAMERA_GAIN2*self.camera.angle/ct.const.MAX_CAMERA_ANGLE)))
+#                         self.rightmotor.go(0)
+                        self.rightmotor.go(80)
             #見失い判定
             if self.following==1 and self.camera.area<ct.const.AREA_THRE_LOSE:
                 self.countAreaLoopLose+=1
                 if self.countAreaLoopLose>ct.const.COUNT_AREA_LOOP_THRE_LOSE:
-                    self.state=4
-                    self.laststate=4
+                    #self.state=4
+                    #self.laststate=4
                     self.countAreaLoopLose=0
                     self.following=0
                     print('見失った！')
-                    cv2.destroyAllWindows()
+                    #cv2.destroyAllWindows()
                     self.refollow=1
                     self.rightmotor.stop()
                     self.leftmotor.stop()
                     self.countDistanceLoopStart=0
             else:
                 self.countAreaLoopLose=0
-            
+            # プレビュー3
             cv2.rectangle(frame, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) # フレームを生成
-        cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(60,0,0))
+        cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(100,0,0))
         frame=cv2.rotate(frame,cv2.ROTATE_180)
-        
-        
+         
         # 一定間隔で状況を撮影
-        if self.timestep%20==0:
-            imName='./TestResult/'+self.filename+'/'+self.filename+'_'+str(self.timer)+'image.jpg'
+        if self.timestep%15==0:
+            imName='./Testresult/'+ self.filename+'/'+ str(self.timer)+'image.jpg'
+            if len(rects)!=0:
+                cv2.rectangle(frame, tuple(rect[0:2]), tuple(rect[0:2] + rect[2:4]), (0, 0, 255), thickness=2) # フレームを生成
+                cv2.drawMarker(frame,(self.camera.cgx,self.camera.cgy),(100,0,0))
+            frame=cv2.rotate(frame,cv2.ROTATE_180)
+            #print('picture')
             cv2.imwrite(imName,frame)
-        
         
         
         cv2.imshow('red', frame)
@@ -457,18 +512,27 @@ class Cansat(object):
         if self.following==1 and len(rects)==0:
             self.countAreaLoopLose+=1
             if self.countAreaLoopLose>ct.const.COUNT_AREA_LOOP_THRE_LOSE:
-                self.state=4
-                self.laststate=4
+                #self.state=4
+                #self.laststate=4
                 self.countAreaLoopLose=0
                 self.following=0
                 print('見失った2！')
-                cv2.destroyAllWindows()
-                self.refollow=1
+                #cv2.destroyAllWindows()
+                #self.refollow=1
                 self.rightmotor.stop()
                 self.leftmotor.stop()
                 self.countDistanceLoopStart=0
     
     def goal(self):
+        cv2.destroyAllWindows()
+        self.timestep2+=1
+        self.rightmotor.stop()
+        self.leftmotor.stop()
+        if self.timestep2==30:
+            self.state=5
+            self.laststate = 5
+            self.timestep2=0
+            '''
         if self.goalTime == 0:#時刻を取得してLEDをステートに合わせて光らせる
             self.goalTime = time.time()
             self.capture.release()
@@ -479,6 +543,7 @@ class Cansat(object):
             
             self.rightmotor.stop()
             self.leftmotor.stop()
+            '''
             """
         if self.countGoal < ct.const.COUNT_GOAL_LOOP_THRE:
             self.rightmotor.stopslowly()

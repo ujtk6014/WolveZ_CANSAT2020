@@ -25,7 +25,7 @@ class Camera(object):
         h = hsv[:, :, 0] # 色相(Hue) 0~360                         
         s = hsv[:, :, 1] #彩度(Saturation) 0~255
         mask = np.zeros(h.shape, dtype=np.uint8) # 赤いところを示すマスクデータ作成
-        mask[((h < 7) | (h > 239)) & (s > 150)] = 255 #defult:20,200,128
+        mask[((h < 7) | (h > 239)) & (s > 90)] = 255 #defult:20,200,128 #変える
         # mask[((h < 20) | (h > 200)) & (s > 64)] = 255
         contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE) # 輪郭を作成
         rects = []
@@ -36,14 +36,14 @@ class Camera(object):
         return rects
     
     def find_center_of_gravity(self,data):
-        self.cgx=data[0]+data[2]//2  
+        self.cgx=data[0]+data[2]//2
         self.cgy=data[1]+data[3]//2
     
     def find_direction(self,x_coordinate):
         angle=(x_coordinate-320)*31.1/320
-        if angle>3:
+        if angle>10:
             self.direct=1 # 右
-        elif angle<-3:
+        elif angle<-10:
             self.direct=-1 # 左
         else:
             self.direct=0# 直進
