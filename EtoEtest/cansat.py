@@ -4,7 +4,7 @@
 Keio Wolve'Z cansat2020
 mission function
 Author Yuji Tanaka
-last update:2020/12/03
+last update:2020/12/11
 """
 
 #ライブラリの読み込み
