@@ -1,3 +1,7 @@
 *.pyc
+*.o
+*.ko
+*.c
+*.order
 __pycache__/
 create_ap/
