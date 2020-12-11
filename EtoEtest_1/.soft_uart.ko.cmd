@@ -1,0 +1,1 @@
+cmd_/home/pi/WolveZ_CANSAT2020/EtoEtest/soft_uart.ko := ld -r  -EL  --build-id  -T ./scripts/module-common.lds -T ./arch/arm/kernel/module.lds -o /home/pi/WolveZ_CANSAT2020/EtoEtest/soft_uart.ko /home/pi/WolveZ_CANSAT2020/EtoEtest/soft_uart.o /home/pi/WolveZ_CANSAT2020/EtoEtest/soft_uart.mod.o;  true
