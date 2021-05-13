@@ -94,7 +94,7 @@ git clone https://github.com/ujtk6014/WolveZ_CANSAT2020.git
   If you want to re-activate, then, run  `ap_on.sh`
 
 ## Project Member
-- Project manager   
+- Project Manager   
   Yuki Ko
 - Software (★: Part leader)  
   ★Yuji Tanaka, Yuki Ko, Kazuki Oshima, Hikaru Kimura, Miyuki Nakamura
